@@ -4,6 +4,10 @@
 
 Este projeto é um sistema dinâmico e interativo de geração e exploração de cidades 3D, desenvolvido com Three.js. O foco principal é criar layouts de cidades procedurais que se adaptam a parâmetros definidos pelo utilizador, proporcionando uma experiência única a cada geração. O sistema permite exploração em primeira pessoa através dos controlos FirstPersonControls do Three.js, oferecendo uma experiência imersiva na cidade gerada.
 
+## Demo
+
+A versão mais recente do projeto está disponível para teste em: [https://hujuc.github.io/Dynamic-City-Quest/](https://hujuc.github.io/Dynamic-City-Quest/)
+
 ## Funcionalidades Implementadas
 
 ### 1. Geração de Terreno
