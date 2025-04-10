@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Cidade Procedural</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div id="container"></div>
+    
+    <div id="controls">
+        <h2>Gerador de Cidade</h2>
+        
+        <label for="gridSize">Tamanho do Grid (3-10):</label>
+        <input type="number" id="gridSize" min="3" max="10" value="3">
+        
+        <label for="streetWidth">Largura das Ruas (5-20):</label>
+        <input type="number" id="streetWidth" min="5" max="20" value="10">
+        
+        <label for="buildingSize">Tamanho dos Edifícios (5-20):</label>
+        <input type="number" id="buildingSize" min="5" max="20" value="10">
+        
+        <label for="buildingHeight">Altura Máxima dos Edifícios (5-50):</label>
+        <input type="number" id="buildingHeight" min="5" max="50" value="20">
+        
+        <div class="checkbox-container">
+            <input type="checkbox" id="enableTerrain" checked>
+            <label for="enableTerrain">Ativar Elevação de Terreno</label>
+        </div>
+        
+        <label for="terrainHeight">Altura Máxima do Terreno (0-15):</label>
+        <input type="range" id="terrainHeight" min="0" max="15" value="8">
+        <span id="terrainHeightValue">8</span>
+        
+        <label for="terrainSmoothing">Suavidade do Terreno (1-10):</label>
+        <input type="range" id="terrainSmoothing" min="1" max="10" value="5">
+        <span id="terrainSmoothingValue">5</span>
+        
+        <h3>Recursos Adicionais</h3>
+        <div class="checkbox-container">
+            <input type="checkbox" id="enableParks" checked>
+            <label for="enableParks">Incluir Parques</label>
+        </div>
+        
+        <div class="checkbox-container">
+            <input type="checkbox" id="enableWater" checked>
+            <label for="enableWater">Incluir Lagos</label>
+        </div>
+        
+        <h3>Configuração de Árvores</h3>
+        <label for="treeCount">Número de Árvores (0-200):</label>
+        <input type="range" id="treeCount" min="0" max="200" value="50">
+        <span id="treeCountValue">50</span>
+        
+        <div class="species-selection">
+            <p>Selecione as espécies de árvores:</p>
+            <div class="checkbox-container">
+                <input type="checkbox" id="species0" class="tree-species-checkbox" value="0" checked>
+                <label for="species0">Pinheiro</label>
+            </div>
+            <div class="checkbox-container">
+                <input type="checkbox" id="species1" class="tree-species-checkbox" value="1" checked>
+                <label for="species1">Carvalho</label>
+            </div>
+            <div class="checkbox-container">
+                <input type="checkbox" id="species2" class="tree-species-checkbox" value="2" checked>
+                <label for="species2">Palmeira</label>
+            </div>
+            <div class="checkbox-container">
+                <input type="checkbox" id="species3" class="tree-species-checkbox" value="3">
+                <label for="species3">Bétula</label>
+            </div>
+        </div>
+        
+        <div class="species-list">
+            <p>Espécies geradas:</p>
+            <ul id="generatedSpeciesList">
+                <li>Nenhuma árvore gerada ainda</li>
+            </ul>
+        </div>
+        
+        <button id="generateBtn">Gerar Cidade</button>
+        
+        <div class="instructions">
+            <strong>Controles:</strong>
+            <p>Mouse - Olhar ao redor</p>
+            <p>WASD - Movimento</p>
+            <p>Espaço - Subir (apenas no modo de voo)</p>
+            <p>Shift - Descer (apenas no modo de voo)</p>
+            <p><strong>Modos de Câmera:</strong></p>
+            <p>Primeira Pessoa - Preso ao chão</p>
+            <p>Modo de Voo - Movimento livre em todas direções</p>
+            <p>Vista Aérea - Visão panorâmica do alto</p>
+        </div>
+        
+        <div id="viewControls">
+            <h3>Modos de Câmera</h3>
+            <div class="camera-buttons">
+                <button id="firstPersonBtn" class="camera-button active-camera">Primeira Pessoa</button>
+                <button id="flyBtn" class="camera-button">Modo de Voo</button>
+                <button id="aerialViewBtn" class="camera-button">Vista Aérea</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Three.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Application scripts -->
+    <script src="js/terrain.js"></script>
+    <script src="js/trees.js"></script>
+    <script src="js/parks.js"></script>
+    <script src="js/water.js"></script>
+    <script src="js/camera-views.js"></script>
+    <script src="js/city.js"></script>
+    <script src="js/controls.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
