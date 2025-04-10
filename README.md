@@ -6,7 +6,7 @@ Este projeto é um sistema dinâmico e interativo de geração e exploração de
 
 ## Demo
 
-A versão mais recente do projeto está disponível para teste em: [https://hujuc.github.io/Dynamic-City-Quest/](https://hujuc.github.io/Dynamic-City-Quest/)
+A versão mais recente do projeto está disponível para teste em: [https://hujuc.github.io/Dynamic-City-Quest/](https://hujuc.github.io/Dynamic-City-Quest/){:target="_blank"}
 
 ## Funcionalidades Implementadas
 
