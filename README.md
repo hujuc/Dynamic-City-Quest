@@ -153,28 +153,23 @@ function generateHeightMap(size, maxHeight, smoothing) {
 
 ## Próximos Passos
 
-### 1. Melhorias na Geração Procedural
-- **Diversificação de Edifícios**: Implementar mais tipos de edifícios com diferentes estilos arquitetónicos
-- **Sistema de Árvores**: Adicionar diferentes espécies de árvores com variações visuais
-- **Parâmetros de Geração**: Expandir as opções de personalização da cidade (densidade, estilo, etc.)
-
-### 2. Interatividade e Navegação
+### 1. Interatividade e Navegação
 - **Sistema de Passeios**: Implementar passeios e áreas de peões
 - **Navegação Aprimorada**: Melhorar o sistema de navegação em primeira pessoa
 - **Colisões**: Implementar sistema de colisão com edifícios e elementos da cidade
 
-### 3. Efeitos Visuais e Ambientais
+### 2. Efeitos Visuais e Ambientais
 - **Iluminação Dinâmica**: Implementar sistema de iluminação noturna com candeeiros de rua
 - **Sistema de Clima**: Adicionar efeitos de chuva e neblina
 - **Ciclo Dia/Noite**: Implementar transição suave entre dia e noite
 
-### 4. Mini-Jogo: "O Segredo da Cidade Perdida"
+### 3. Mini-Jogo: "O Segredo da Cidade Perdida"
 - **Sistema de Pistas**: Implementar pistas e quebra-cabeças distribuídos pela cidade
 - **Artefacto Escondido**: Criar um artefacto especial para ser encontrado
 - **Sala Secreta**: Implementar uma sala secreta no museu da cidade
 - **Cena Final**: Criar uma animação de conclusão quando o segredo for descoberto
 
-### 5. Otimizações e Desempenho
+### 4. Otimizações e Desempenho
 - **Melhorias no LOD**: Refinar o sistema de Level of Detail
 - **Otimização de Texturas**: Implementar sistema de carregamento otimizado de texturas
 - **Gestão de Memória**: Melhorar a gestão de recursos para cidades maiores
