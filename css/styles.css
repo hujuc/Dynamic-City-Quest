@@ -154,3 +154,76 @@ input {
     padding-left: 20px;
     font-size: 0.9em;
 }
+
+/* Estilos para o painel de controle do ciclo dia/noite */
+.control-group {
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.control-group h3 {
+    color: #fff;
+    margin: 0 0 10px 0;
+    font-size: 1.1em;
+    text-align: center;
+}
+
+.control-row {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+    gap: 10px;
+}
+
+.control-row label {
+    color: #fff;
+    min-width: 80px;
+}
+
+.slider {
+    flex: 1;
+    height: 8px;
+    -webkit-appearance: none;
+    background: #444;
+    border-radius: 4px;
+    outline: none;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #4CAF50;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.slider::-webkit-slider-thumb:hover {
+    background: #45a049;
+}
+
+#timeDisplay {
+    color: #fff;
+    min-width: 60px;
+    text-align: center;
+    font-family: monospace;
+    font-size: 1.1em;
+}
+
+.control-button {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex: 1;
+}
+
+.control-button:hover {
+    background: #45a049;
+}

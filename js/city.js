@@ -134,6 +134,9 @@ function createStreets(gridSize, blockSize, streetWidth, halfSize) {
             cityObjects.push(mesh);
         }
     }
+
+    // Adicionar postes nas esquinas
+    addStreetLampsAtCorners(gridSize, blockSize, streetWidth, halfSize);
 }
 
 // Criar linha 3D que segue o terreno
@@ -447,6 +450,17 @@ const FOG_SETTINGS = {
     far: 200
 };
 
+// Função auxiliar para encontrar a malha principal de um objeto
+function getMainMesh(object) {
+    let mesh = null;
+    object.traverse(child => {
+        if (child.isMesh && !mesh) {
+            mesh = child;
+        }
+    });
+    return mesh;
+}
+
 // Criar um edifício com design variado e LOD
 function createBuilding(x, z, size, height, color) {
     // Obter altura do terreno na posição do edifício
@@ -565,6 +579,29 @@ function createBuilding(x, z, size, height, color) {
     // Adicionar à cena e à lista de objetos da cidade
     scene.add(buildingGroup);
     cityObjects.push(buildingGroup);
+    
+    // Adicionar bounding box para colisão
+    let bbox;
+    if (buildingType === "industrial") {
+        // Para edifícios industriais, usar apenas a malha principal
+        const mainMesh = getMainMesh(buildingGroup);
+        if (mainMesh) {
+            bbox = new THREE.Box3().setFromObject(mainMesh).expandByScalar(0.1);
+        }
+    } else {
+        // Para outros tipos de edifícios, usar o grupo inteiro
+        bbox = new THREE.Box3().setFromObject(buildingGroup).expandByScalar(0.1);
+    }
+    
+    if (bbox) {
+        buildingBoxes.push(bbox);
+        
+        // Adicionar visualização da bounding box se debug estiver ativado
+        if (window.DEBUG_COLLISIONS) {
+            const helper = new THREE.Box3Helper(bbox, 0xff0000);
+            scene.add(helper);
+        }
+    }
     
     return buildingGroup;
 }
@@ -1163,10 +1200,19 @@ function clearCity() {
         }
     });
     
+    // Limpar helpers de debug
+    scene.children.forEach(child => {
+        if (child.isBox3Helper) {
+            scene.remove(child);
+        }
+    });
+    
     cityObjects = [];
+    buildingBoxes = []; // Limpar as bounding boxes dos edifícios
     clearTrees(); // Limpar árvores
     clearParks(); // Limpar parques
     clearWaterBodies(); // Limpar lagos
+    clearStreetLamps(); // Limpar postes de luz
 }
 
 // Modificar a função switchToFirstPersonMode para adicionar fog

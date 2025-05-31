@@ -5,6 +5,9 @@ let waterSettings = {
     probability: 0.15  // Probabilidade de um bloco ser um lago (15%)
 };
 
+// Array para armazenar objetos de colisão das pedras
+let stoneCollisionObjects = [];
+
 // Criar um lago em uma posição específica
 function createLake(centerX, centerZ, size) {
     const lakeGroup = new THREE.Group();
@@ -233,14 +236,6 @@ function createLakeBottom(lakeGroup, centerX, centerZ, radius, segments, heightO
     return bottomMesh;
 }
 
-// Limpar todos os corpos d'água
-function clearWaterBodies() {
-    waterBodies.forEach(water => {
-        scene.remove(water);
-    });
-    waterBodies = [];
-}
-
 // Função para adicionar pedras decorativas ao redor do lago
 function addStonesAroundLake(lakeGroup, centerX, centerZ, radius) {
     // Configurações para as pedras
@@ -336,7 +331,47 @@ function addStonesAroundLake(lakeGroup, centerX, centerZ, radius) {
         
         // Armazenar a posição para verificar sobreposição
         stonePositions.push({ x, z });
+
+        // Criar esfera de colisão para a pedra
+        const stoneCenter = new THREE.Vector3(
+            centerX + x,
+            terrainHeight + size * 0.5,
+            centerZ + z
+        );
+        
+        // Aumentar o raio de colisão para ser mais efetivo
+        const stoneRadius = size * 1.2; // Aumentado de 0.8 para 1.2
+        
+        // Adicionar à lista de objetos de colisão
+        stoneCollisionObjects.push({
+            center: stoneCenter,
+            radius: stoneRadius,
+            stone: stone // Referência à pedra para debug
+        });
+
+        // Debug: Visualizar esfera de colisão
+        if (window.DEBUG_COLLISIONS) {
+            const sphereGeometry = new THREE.SphereGeometry(stoneRadius, 16, 16);
+            const sphereMaterial = new THREE.MeshBasicMaterial({
+                color: 0xff0000,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.3
+            });
+            const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+            sphere.position.copy(stoneCenter);
+            scene.add(sphere);
+        }
     }
+}
+
+// Limpar todos os corpos d'água
+function clearWaterBodies() {
+    waterBodies.forEach(water => {
+        scene.remove(water);
+    });
+    waterBodies = [];
+    stoneCollisionObjects = []; // Limpar também os objetos de colisão das pedras
 }
 
 // Atualizar configurações dos corpos d'água

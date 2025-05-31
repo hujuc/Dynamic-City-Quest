@@ -102,6 +102,19 @@
                 <button id="aerialViewBtn" class="camera-button">Vista Aérea</button>
             </div>
         </div>
+
+        <div class="control-group">
+            <h3>Ciclo Dia/Noite</h3>
+            <div class="control-row">
+                <label for="timeSlider">Hora do Dia:</label>
+                <input type="range" id="timeSlider" min="0" max="100" value="50" class="slider">
+                <span id="timeDisplay">12:00</span>
+            </div>
+            <div class="control-row">
+                <button id="pauseTime" class="control-button">Pausar Tempo</button>
+                <button id="resumeTime" class="control-button" style="display: none;">Retomar Tempo</button>
+            </div>
+        </div>
     </div>
 
     <!-- Three.js library -->
@@ -113,6 +126,8 @@
     <script src="js/parks.js"></script>
     <script src="js/water.js"></script>
     <script src="js/camera-views.js"></script>
+    <script src="js/streetlamps.js"></script>
+    <script src="js/daynightcycle.js"></script>
     <script src="js/city.js"></script>
     <script src="js/controls.js"></script>
     <script src="js/ui.js"></script>

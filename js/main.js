@@ -40,6 +40,9 @@ function init() {
     // Adicionar luzes
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
     scene.add(ambientLight);
+
+    // Inicializar o ciclo dia/noite
+    initDayNightCycle(scene);
     
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
     directionalLight.position.set(100, 100, 50);
@@ -117,15 +120,19 @@ function animate() {
         isFirstPersonMode() &&
         (
             isCameraCollidingWithTrees(camera.position) ||
-            isCameraCollidingWithParkObjects(camera.position)
+            isCameraCollidingWithParkObjects(camera.position) ||
+            isCameraCollidingWithLakeStones(camera.position) ||
+            isCameraCollidingWithBuildings(camera.position)
         )
     ) {
         camera.position.copy(previousCameraPosition);
     }
     
+    updateDayNightCycle(scene);
 
     prevTime = time;
     renderer.render(scene, camera);
+
 }
 
 

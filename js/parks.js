@@ -1,4 +1,4 @@
-let parkCollisionBoxes = []; // Bounding boxes de bancos e gazebos
+let parkCollisionObjects = []; // Objetos de colisão dos parques (bancos e gazebos)
 
 // Criar o chão do parque seguindo a topografia do terreno
 function createParkGround(parkGroup, centerX, centerZ, size) {
@@ -197,13 +197,16 @@ function createGazebo(parkGroup, centerX, centerZ, size) {
     // Adicionar o gazebo ao parque
     parkGroup.add(gazeboGroup);
 
-    // Atualizar transformações locais
-    gazeboGroup.updateMatrixWorld(true);
+    // Criar esfera de colisão para o gazebo
+    const gazeboCenter = new THREE.Vector3(centerX, baseHeight + columnHeight/2, centerZ);
+    const gazeboRadius = size * 1.5; // Raio maior que o tamanho do gazebo para melhor colisão
+    
+    parkCollisionObjects.push({
+        center: gazeboCenter,
+        radius: gazeboRadius
+    });
 
-    // Criar bounding box de colisão usando posição global
-    const gazeboBox = new THREE.Box3().setFromObject(gazeboGroup);
-    parkCollisionBoxes.push(gazeboBox);
-
+    return gazeboGroup;
 }
 
 // Criar bancos no parque
@@ -264,13 +267,14 @@ function createBenches(parkGroup, centerX, centerZ, size) {
         // Adicionar o grupo do banco ao grupo do parque
         parkGroup.add(benchGroup);
 
-        // Garantir que a posição foi aplicada no mundo
-        benchGroup.updateMatrixWorld(true); // <- Atualizar o banco especificamente
-
-        const benchBox = new THREE.Box3().setFromObject(benchGroup);
-        parkCollisionBoxes.push(benchBox);
-
-
+        // Criar esfera de colisão para o banco
+        const benchCenter = new THREE.Vector3(worldX, height + 0.5, worldZ);
+        const benchRadius = size / 10; // Raio baseado no tamanho do banco
+        
+        parkCollisionObjects.push({
+            center: benchCenter,
+            radius: benchRadius
+        });
     });
 }
 
@@ -326,7 +330,7 @@ function clearParks() {
         scene.remove(park);
     });
     parks = [];
-    parkCollisionBoxes = [];
+    parkCollisionObjects = [];
 }
 
 // Atualizar configurações dos parques
