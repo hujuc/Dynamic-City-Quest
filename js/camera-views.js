@@ -159,3 +159,19 @@ function isFirstPersonMode() {
 function isFlyMode() {
     return cameraViews.currentMode === cameraViews.modes.FLY;
 }
+
+// Alternar para o modo primeira pessoa
+function switchToFirstPerson() {
+    // Resetar a posição fixa do corpo
+    resetFixedBody();
+    
+    // Configurar a câmera para primeira pessoa
+    camera.position.set(0, 1.8, 0); // Altura dos olhos
+    camera.rotation.set(0, 0, 0);
+    
+    // Atualizar controles
+    setupFirstPersonControls();
+    
+    // Atualizar UI
+    updateCameraButtons('firstPersonBtn');
+}

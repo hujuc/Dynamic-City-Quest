@@ -75,6 +75,9 @@ function init() {
     // Criar terreno plano inicial
     createFlatTerrain();
     
+    // Inicializar o corpo do jogador
+    initPlayerBody();
+    
     // Iniciar loop de animação
     animate();
     
@@ -91,22 +94,40 @@ function onWindowResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
+let previousCameraPosition = new THREE.Vector3();
+
 // Loop de animação
 function animate() {
     requestAnimationFrame(animate);
-    
-    // Controle de movimento
+
     const time = performance.now();
     const delta = (time - prevTime) / 1000;
-    
-    // Atualizar movimento da câmera
+
+    // Guardar posição anterior da câmara só no modo primeira pessoa
+    if (isFirstPersonMode()) {
+        previousCameraPosition.copy(camera.position);
+    }
+
+    // Atualizar movimento e física
     updateCameraMovement(delta);
+    updatePlayerBody();
+
+    // Verificar colisões
+    if (
+        isFirstPersonMode() &&
+        (
+            isCameraCollidingWithTrees(camera.position) ||
+            isCameraCollidingWithParkObjects(camera.position)
+        )
+    ) {
+        camera.position.copy(previousCameraPosition);
+    }
     
+
     prevTime = time;
-    
-    // Renderizar
     renderer.render(scene, camera);
 }
+
 
 // Iniciar
 window.addEventListener('load', init);

@@ -276,6 +276,13 @@ function createTree(x, y, z, species) {
     
     // Posicionar a árvore na altura correta do terreno
     treeGroup.position.set(x, y, z);
+
+    // Criar bounding sphere para colisão
+    const collisionRadius = species.foliageRadius || 2; // Usa raio da folhagem como aproximação
+    treeGroup.userData.collisionSphere = {
+        center: new THREE.Vector3(x, y + species.trunkHeight, z),
+        radius: collisionRadius
+    };
     
     // Adicionar à cena
     scene.add(treeGroup);

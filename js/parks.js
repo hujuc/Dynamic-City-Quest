@@ -1,3 +1,5 @@
+let parkCollisionBoxes = []; // Bounding boxes de bancos e gazebos
+
 // Criar o chão do parque seguindo a topografia do terreno
 function createParkGround(parkGroup, centerX, centerZ, size) {
     // Criar uma geometria de terreno mais detalhada para o parque
@@ -141,7 +143,11 @@ function createParkPaths(parkGroup, centerX, centerZ, size) {
 function createGazebo(parkGroup, centerX, centerZ, size) {
     // Obter altura do terreno no centro
     const baseHeight = getTerrainHeight(centerX, centerZ);
-    
+
+    // Criar grupo para o gazebo
+    const gazeboGroup = new THREE.Group();
+    gazeboGroup.position.set(0, 0, 0); // relativo ao centro do parque
+
     // Base do gazebo
     const baseGeometry = new THREE.CylinderGeometry(size, size, 0.5, 8);
     const baseMaterial = new THREE.MeshStandardMaterial({
@@ -149,34 +155,32 @@ function createGazebo(parkGroup, centerX, centerZ, size) {
         roughness: 0.8,
         metalness: 0.2
     });
-    
+
     const base = new THREE.Mesh(baseGeometry, baseMaterial);
     base.position.set(0, baseHeight + 0.25, 0);
     base.receiveShadow = true;
     base.castShadow = true;
-    parkGroup.add(base);
-    
+    gazeboGroup.add(base);
+
     // Colunas
     const numColumns = 6;
     const columnHeight = 4.5;
     const columnRadius = 0.1;
-    
+
     for (let i = 0; i < numColumns; i++) {
         const angle = (i / numColumns) * Math.PI * 2;
         const columnGeometry = new THREE.CylinderGeometry(columnRadius, columnRadius, columnHeight, 8);
         const column = new THREE.Mesh(columnGeometry, baseMaterial);
-        
+
         const x = Math.sin(angle) * (size * 0.8);
         const z = Math.cos(angle) * (size * 0.8);
-        
-        // Obter altura neste ponto específico
+
         const height = getTerrainHeight(centerX + x, centerZ + z);
-        
         column.position.set(x, height + columnHeight / 2 + 0.5, z);
         column.castShadow = true;
-        parkGroup.add(column);
+        gazeboGroup.add(column);
     }
-    
+
     // Teto do gazebo
     const roofGeometry = new THREE.ConeGeometry(size * 1.2, size, 8);
     const roofMaterial = new THREE.MeshStandardMaterial({
@@ -184,14 +188,24 @@ function createGazebo(parkGroup, centerX, centerZ, size) {
         roughness: 0.9,
         metalness: 0.1
     });
-    
+
     const roof = new THREE.Mesh(roofGeometry, roofMaterial);
     roof.position.set(0, baseHeight + columnHeight + 0.6 + size / 4, 0);
     roof.castShadow = true;
-    parkGroup.add(roof);
+    gazeboGroup.add(roof);
+
+    // Adicionar o gazebo ao parque
+    parkGroup.add(gazeboGroup);
+
+    // Atualizar transformações locais
+    gazeboGroup.updateMatrixWorld(true);
+
+    // Criar bounding box de colisão usando posição global
+    const gazeboBox = new THREE.Box3().setFromObject(gazeboGroup);
+    parkCollisionBoxes.push(gazeboBox);
+
 }
 
-// Criar bancos no parque
 // Criar bancos no parque
 function createBenches(parkGroup, centerX, centerZ, size) {
     const benchMaterial = new THREE.MeshStandardMaterial({
@@ -249,6 +263,14 @@ function createBenches(parkGroup, centerX, centerZ, size) {
         
         // Adicionar o grupo do banco ao grupo do parque
         parkGroup.add(benchGroup);
+
+        // Garantir que a posição foi aplicada no mundo
+        benchGroup.updateMatrixWorld(true); // <- Atualizar o banco especificamente
+
+        const benchBox = new THREE.Box3().setFromObject(benchGroup);
+        parkCollisionBoxes.push(benchBox);
+
+
     });
 }
 
@@ -304,6 +326,7 @@ function clearParks() {
         scene.remove(park);
     });
     parks = [];
+    parkCollisionBoxes = [];
 }
 
 // Atualizar configurações dos parques
