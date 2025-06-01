@@ -51,7 +51,7 @@ function initRain(scene) {
 
     // ---------- SOM DA CHUVA -----------
     if (!rainAudio) {
-        rainAudio = new Audio('/Dynamic-City-Quest/sounds/rain.mp3'); // ou rain.ogg
+        rainAudio = new Audio('./sounds/rain.mp3'); // ou rain.ogg
         rainAudio.loop = true;
         rainAudio.volume = rainSettings.intensity / 100; // volume inicial
         rainAudio.preload = 'auto';

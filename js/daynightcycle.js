@@ -102,10 +102,10 @@ function initDayNightCycle(scene) {
 
     // Carregar texturas do sol e da lua
     const loader = new THREE.TextureLoader();
-    sunTexture = loader.load('/Dynamic-City-Quest/textures/sun.png', () => {
+    sunTexture = loader.load('./textures/sun.png', () => {
         updateCelestialMeshes();
     });
-    moonTexture = loader.load('/Dynamic-City-Quest/textures/moon.png', () => {
+    moonTexture = loader.load('./textures/moon.png', () => {
         updateCelestialMeshes();
     });
 
