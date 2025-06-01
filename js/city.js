@@ -603,6 +603,14 @@ function createBuilding(x, z, size, height, color) {
         }
     }
     
+    // Ao adicionar cada parte do edifício, garantir que as sombras estejam ativadas
+    buildingGroup.children.forEach(child => {
+        if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+        }
+    });
+    
     return buildingGroup;
 }
 

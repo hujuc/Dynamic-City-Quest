@@ -71,8 +71,20 @@ function initDayNightCycle(scene) {
     // Sol (DirectionalLight)
     sunLight = new THREE.DirectionalLight(0xffffff, 1.0);
     sunLight.castShadow = true;
-    sunLight.shadow.mapSize.width = 2048;
-    sunLight.shadow.mapSize.height = 2048;
+    
+    // Configurações de sombra do sol
+    sunLight.shadow.mapSize.width = 4096;
+    sunLight.shadow.mapSize.height = 4096;
+    sunLight.shadow.camera.near = 0.5;
+    sunLight.shadow.camera.far = 1000;
+    sunLight.shadow.camera.left = -200;
+    sunLight.shadow.camera.right = 200;
+    sunLight.shadow.camera.top = 200;
+    sunLight.shadow.camera.bottom = -200;
+    sunLight.shadow.bias = -0.0005;
+    sunLight.shadow.normalBias = 0.05;
+    sunLight.shadow.radius = 1.5;
+    
     scene.add(sunLight);
     scene.add(sunLight.target);
 
@@ -161,13 +173,29 @@ function updateSunAndMoon(scene) {
     sunLight.position.copy(sunPos);
     sunLight.target.position.set(0, 0, 0);
 
+    // Ajustar intensidade e sombras baseado na altura do sol
+    const sunHeight = Math.max(0, sunPos.y / radius);
+    sunLight.intensity = sunHeight;
+    
+    const maxCitySize = 600; // ajusta conforme o tamanho máximo da tua cidade
+    sunLight.shadow.camera.left = -maxCitySize;
+    sunLight.shadow.camera.right = maxCitySize;
+    sunLight.shadow.camera.top = maxCitySize;
+    sunLight.shadow.camera.bottom = -maxCitySize;
+    sunLight.shadow.camera.near = 0.5;
+    sunLight.shadow.camera.far = 2000; // garante que o sol cobre todo o terreno, mesmo à noite
+    sunLight.shadow.bias = -0.0001;
+    sunLight.shadow.normalBias = 0.02;
+    sunLight.shadow.radius = 1.5;
+    sunLight.shadow.camera.updateProjectionMatrix();
+
+
     // Lua (lado oposto)
     const moonPos = sunPos.clone().negate();
     moonLight.position.copy(moonPos);
     moonLight.target.position.set(0, 0, 0);
 
-    // Intensidade
-    sunLight.intensity = Math.max(0, sunPos.y / radius);
+    // Intensidade da lua
     moonLight.intensity = Math.max(0, moonPos.y / radius) * 0.4;
 }
 
