@@ -28,8 +28,14 @@ function generateCity() {
     const totalSize = (gridSize * blockSize) + ((gridSize + 1) * streetWidth);
     const halfSize = totalSize / 2;
     
+    // Atualizar os limites da cidade
+    updateCityBounds(gridSize, blockSize, streetWidth);
+    
     // Criar ruas (malha de linhas para visualização)
     createStreets(gridSize, blockSize, streetWidth, halfSize);
+    
+    // Calcular o índice do bloco central
+    const centerBlockIndex = Math.floor(gridSize / 2);
     
     // Criar blocos da cidade (edifícios ou parques)
     for (let i = 0; i < gridSize; i++) {
@@ -38,8 +44,13 @@ function generateCity() {
             const blockX = -halfSize + streetWidth + (i * (blockSize + streetWidth)) + blockSize / 2;
             const blockZ = -halfSize + streetWidth + (j * (blockSize + streetWidth)) + blockSize / 2;
             
+            // Verificar se é o bloco central
+            if (i === centerBlockIndex && j === centerBlockIndex) {
+                // Criar o baú do tesouro no centro
+                createTreasureChest(blockX, blockZ, blockSize);
+            }
             // Decidir se este bloco será um parque ou um conjunto de edifícios
-            if (parksSettings.enabled && Math.random() < parksSettings.probability) {
+            else if (parksSettings.enabled && Math.random() < parksSettings.probability) {
                 // Criar um parque
                 createPark(blockX, blockZ, blockSize);
             } 
@@ -55,16 +66,22 @@ function generateCity() {
         }
     }
     
+    // Criar as duas metades de chaves em posições aleatórias
+    createKeyHalf(1);
+    createKeyHalf(2);
+    
     // Atualizar configurações de árvores e gerar árvores
     updateTreeSettings();
     generateTrees();
     
-    // Posicionar câmera para visualizar a cidade
-    camera.position.set(-halfSize - 20, 20, -halfSize - 20);
+    // Posicionar câmera em um dos cantos da cidade
+    const cornerX = -halfSize + streetWidth/2; // Metade da largura da rua para ficar no centro da rua
+    const cornerZ = -halfSize + streetWidth/2;
+    camera.position.set(cornerX, 2, cornerZ); // Altura de 2 unidades
     
-    // Resetar a rotação da câmera
-    cameraRotation.x = -0.3; // Olhar um pouco para baixo
-    cameraRotation.y = Math.PI / 4; // Olhar em direção à cidade
+    // Resetar a rotação da câmera para olhar para o centro da cidade
+    cameraRotation.x = 0;
+    cameraRotation.y = Math.PI / 4; // Olhar em direção ao centro
     
     // Aplicar a rotação
     camera.quaternion.setFromEuler(
@@ -446,8 +463,8 @@ const LOD_DISTANCES = {
 // Configurações de Fog
 const FOG_SETTINGS = {
     color: 0xcccccc,
-    near: 50,
-    far: 200
+    near: 1,
+    far: 100
 };
 
 // Função auxiliar para encontrar a malha principal de um objeto
@@ -514,6 +531,15 @@ function createBuilding(x, z, size, height, color) {
     // Criar versões LOD do edifício
     const lod = new THREE.LOD();
     
+    // Decidir se este edifício terá textura (aleatoriamente)
+    const hasTexture = Math.random() > 0.3; // 70% de chance de ter textura
+    let buildingMaterial;
+    
+    if (hasTexture) {
+        // Criar o material texturizado uma única vez para todos os níveis de LOD
+        buildingMaterial = getRandomBuildingMaterial();
+    }
+    
     // Versão de alta qualidade (próxima)
     const highDetail = new THREE.Group();
     switch (buildingType) {
@@ -566,6 +592,39 @@ function createBuilding(x, z, size, height, color) {
     }
     lod.addLevel(lowDetail, LOD_DISTANCES.MEDIUM);
     
+    // Aplicar texturas a todos os níveis de detalhe
+    [highDetail, mediumDetail, lowDetail].forEach(detailLevel => {
+        detailLevel.traverse(child => {
+            if (child.isMesh && child.material) {
+                // Verificar se é a malha principal do edifício (paredes)
+                const isMainBuilding = child === detailLevel.children[0];
+                
+                if (isMainBuilding && hasTexture) {
+                    // Preparar a geometria para texturas
+                    prepareGeometryForTextures(child.geometry);
+                    
+                    // Usar o mesmo material texturizado para todos os níveis de LOD
+                    const texturedMaterial = buildingMaterial.clone();
+                    
+                    // Preservar propriedades específicas do material original
+                    if (child.material.color) {
+                        texturedMaterial.color = child.material.color;
+                    }
+                    if (child.material.emissive) {
+                        texturedMaterial.emissive = child.material.emissive;
+                    }
+                    if (child.material.emissiveIntensity) {
+                        texturedMaterial.emissiveIntensity = child.material.emissiveIntensity;
+                    }
+                    
+                    // Aplicar o material texturizado
+                    child.material = texturedMaterial;
+                }
+                // Para outros elementos (janelas, varandas, etc), manter o material original
+            }
+        });
+    });
+    
     buildingGroup.add(lod);
     
     // Configurar sombras apenas para o nível de detalhe atual
@@ -581,26 +640,13 @@ function createBuilding(x, z, size, height, color) {
     cityObjects.push(buildingGroup);
     
     // Adicionar bounding box para colisão
-    let bbox;
-    if (buildingType === "industrial") {
-        // Para edifícios industriais, usar apenas a malha principal
-        const mainMesh = getMainMesh(buildingGroup);
-        if (mainMesh) {
-            bbox = new THREE.Box3().setFromObject(mainMesh).expandByScalar(0.1);
-        }
-    } else {
-        // Para outros tipos de edifícios, usar o grupo inteiro
-        bbox = new THREE.Box3().setFromObject(buildingGroup).expandByScalar(0.1);
-    }
+    const bbox = new THREE.Box3().setFromObject(buildingGroup).expandByScalar(0.1);
+    buildingBoxes.push(bbox);
     
-    if (bbox) {
-        buildingBoxes.push(bbox);
-        
-        // Adicionar visualização da bounding box se debug estiver ativado
-        if (window.DEBUG_COLLISIONS) {
-            const helper = new THREE.Box3Helper(bbox, 0xff0000);
-            scene.add(helper);
-        }
+    // Adicionar visualização da bounding box se debug estiver ativado
+    if (window.DEBUG_COLLISIONS) {
+        const helper = new THREE.Box3Helper(bbox, 0xff0000);
+        scene.add(helper);
     }
     
     // Ao adicionar cada parte do edifício, garantir que as sombras estejam ativadas
@@ -814,11 +860,8 @@ function createOfficeBuilding(group, size, height, color) {
 
 // Edifício industrial
 function createIndustrialBuilding(group, size, height, color) {
-    // Altura mais baixa em média para edifícios industriais
-    height = Math.min(height, 10);
-    
     // Corpo principal
-    const mainGeometry = new THREE.BoxGeometry(size * 1.2, height, size * 1.2);
+    const mainGeometry = new THREE.BoxGeometry(size, height, size);
     
     // Cor industrial (mais cinza)
     const industrialColor = new THREE.Color(
@@ -830,54 +873,42 @@ function createIndustrialBuilding(group, size, height, color) {
     const mainMaterial = new THREE.MeshStandardMaterial({ 
         color: industrialColor, 
         roughness: 0.9, 
-        metalness: 0.2 
+        metalness: 0.1 
     });
     
     const building = new THREE.Mesh(mainGeometry, mainMaterial);
     building.position.set(0, height / 2, 0);
+    group.add(building);
     
-    // Adicionar telhado inclinado
-    const roofHeight = height * 0.3;
-    const roofGeometry = new THREE.ConeGeometry(size * 0.9, roofHeight, 4);
+    // Adicionar 1-3 chaminés
+    const numChimneys = Math.floor(Math.random() * 3) + 1;
+    const chimneyHeight = height * 0.4;
+    const chimneyRadius = size * 0.08;
     
-    const roofMaterial = new THREE.MeshStandardMaterial({ 
-        color: 0x333333, 
-        roughness: 0.8, 
-        metalness: 0.2 
-    });
-    
-    const roof = new THREE.Mesh(roofGeometry, roofMaterial);
-    roof.position.set(0, height + roofHeight/2, 0);
-    roof.rotation.y = Math.PI / 4; // Rotacionar 45 graus
-    
-    // Ocasionalmente adicionar uma chaminé
-    if (Math.random() > 0.6) {
-        const chimneyHeight = height * 0.6;
-        const chimneyRadius = size * 0.1;
+    for (let i = 0; i < numChimneys; i++) {
         const chimneyGeometry = new THREE.CylinderGeometry(
             chimneyRadius, chimneyRadius, chimneyHeight, 8
         );
         
         const chimneyMaterial = new THREE.MeshStandardMaterial({ 
-            color: 0x993333, 
+            color: 0x666666, 
             roughness: 0.9, 
             metalness: 0.1 
         });
         
         const chimney = new THREE.Mesh(chimneyGeometry, chimneyMaterial);
         
-        // Posicionar na lateral do edifício
+        // Posicionar as chaminés no topo do edifício
+        const angle = (i / numChimneys) * Math.PI * 2;
+        const radius = size * 0.3;
         chimney.position.set(
-            size * 0.4,
+            Math.cos(angle) * radius,
             height + chimneyHeight/2,
-            size * 0.4
+            Math.sin(angle) * radius
         );
         
         group.add(chimney);
     }
-    
-    group.add(building);
-    group.add(roof);
 }
 
 // Edifício icônico (landmark)
@@ -1260,6 +1291,25 @@ function switchToFlyMode() {
     // Se estiver no modo aéreo, salvar aquela posição também
     if (cameraViews.currentMode === cameraViews.modes.AERIAL) {
         saveCurrentCameraState();
+        
+        // Calcular limites da cidade
+        const gridSize = parseInt(document.getElementById('gridSize').value);
+        const streetWidth = parseInt(document.getElementById('streetWidth').value);
+        const buildingSize = parseInt(document.getElementById('buildingSize').value);
+        const blockSize = buildingSize * 3;
+        const totalSize = (gridSize * blockSize) + ((gridSize + 1) * streetWidth);
+        const halfSize = totalSize / 2;
+        
+        // Garantir que a câmera está dentro dos limites da cidade
+        const maxX = halfSize - streetWidth;
+        const maxZ = halfSize - streetWidth;
+        
+        // Limitar a posição da câmera aos limites da cidade
+        camera.position.x = Math.max(-maxX, Math.min(maxX, camera.position.x));
+        camera.position.z = Math.max(-maxZ, Math.min(maxZ, camera.position.z));
+        
+        // Ajustar a altura da câmera para um valor razoável
+        camera.position.y = Math.max(5, Math.min(50, camera.position.y));
     }
     
     // Mudar para o modo de voo
@@ -1370,4 +1420,237 @@ function animate() {
     updateBuildingLODs();
     
     // ... resto do código de animação existente ...
+}
+
+// Função para criar o baú do tesouro
+function createTreasureChest(centerX, centerZ, size) {
+    const chestGroup = new THREE.Group();
+    
+    // Obter altura do terreno na posição do baú
+    const terrainHeight = getTerrainHeight(centerX, centerZ);
+    
+    // Criar a base do baú (uma plataforma)
+    const baseGeometry = new THREE.BoxGeometry(2, 0.2, 2);
+    const baseMaterial = new THREE.MeshStandardMaterial({
+        color: 0x8B4513,
+        roughness: 0.9,
+        metalness: 0.1
+    });
+    const base = new THREE.Mesh(baseGeometry, baseMaterial);
+    base.position.set(0, terrainHeight + 0.1, 0);
+    base.castShadow = true;
+    base.receiveShadow = true;
+    chestGroup.add(base);
+    
+    // Criar o baú
+    const chestGeometry = new THREE.BoxGeometry(1.5, 1, 1);
+    const chestMaterial = new THREE.MeshStandardMaterial({
+        color: 0xDAA520,
+        roughness: 0.7,
+        metalness: 0.3
+    });
+    const chest = new THREE.Mesh(chestGeometry, chestMaterial);
+    chest.position.set(0, terrainHeight + 0.7, 0);
+    chest.castShadow = true;
+    chest.receiveShadow = true;
+    chestGroup.add(chest);
+    
+    // Adicionar detalhes ao baú (tampa, fechadura, etc)
+    const lidGeometry = new THREE.BoxGeometry(1.5, 0.2, 1);
+    const lidMaterial = new THREE.MeshStandardMaterial({
+        color: 0xB8860B,
+        roughness: 0.7,
+        metalness: 0.3
+    });
+    const lid = new THREE.Mesh(lidGeometry, lidMaterial);
+    lid.position.set(0, terrainHeight + 1.2, 0);
+    lid.castShadow = true;
+    lid.receiveShadow = true;
+    chestGroup.add(lid);
+    
+    // Adicionar fechadura
+    const lockGeometry = new THREE.BoxGeometry(0.2, 0.2, 0.1);
+    const lockMaterial = new THREE.MeshStandardMaterial({
+        color: 0x696969,
+        roughness: 0.5,
+        metalness: 0.8
+    });
+    const lock = new THREE.Mesh(lockGeometry, lockMaterial);
+    lock.position.set(0, terrainHeight + 1.1, 0.5);
+    lock.castShadow = true;
+    lock.receiveShadow = true;
+    chestGroup.add(lock);
+    
+    // Posicionar o grupo do baú
+    chestGroup.position.set(centerX, 0, centerZ);
+    
+    // Adicionar à cena
+    scene.add(chestGroup);
+    
+    // Adicionar à lista de objetos da cidade
+    if (!cityObjects) {
+        cityObjects = [];
+    }
+    cityObjects.push(chestGroup);
+    
+    // Adicionar bounding box para colisão
+    const bbox = new THREE.Box3().setFromObject(chestGroup).expandByScalar(0.1);
+    if (!buildingBoxes) {
+        buildingBoxes = [];
+    }
+    buildingBoxes.push(bbox);
+    
+    // Adicionar visualização da bounding box se debug estiver ativado
+    if (window.DEBUG_COLLISIONS) {
+        const helper = new THREE.Box3Helper(bbox, 0xff0000);
+        scene.add(helper);
+    }
+    
+    // Adicionar propriedade para identificar que é um baú do tesouro
+    chestGroup.userData = {
+        isTreasureChest: true,
+        position: new THREE.Vector3(centerX, terrainHeight, centerZ)
+    };
+    
+    return chestGroup;
+}
+
+// Função para criar uma metade de chave
+function createKeyHalf(keyNumber) {
+    const keyGroup = new THREE.Group();
+    
+    // Encontrar uma posição aleatória na cidade
+    const gridSize = parseInt(document.getElementById('gridSize').value);
+    const streetWidth = parseInt(document.getElementById('streetWidth').value);
+    const buildingSize = parseInt(document.getElementById('buildingSize').value);
+    const blockSize = buildingSize * 3;
+    const totalSize = (gridSize * blockSize) + ((gridSize + 1) * streetWidth);
+    const halfSize = totalSize / 2;
+    
+    // Função para verificar se uma posição é válida (sem colisões)
+    function isValidPosition(x, z) {
+        // Verificar se está dentro dos limites da cidade
+        if (Math.abs(x) > halfSize - streetWidth || Math.abs(z) > halfSize - streetWidth) {
+            return false;
+        }
+        
+        // Verificar se está muito perto do centro (quarteirão central)
+        const centerDistance = Math.sqrt(x * x + z * z);
+        const minDistanceFromCenter = blockSize * 2; // Distância mínima do centro (2 blocos)
+        if (centerDistance < minDistanceFromCenter) {
+            return false;
+        }
+        
+        // Verificar colisão com edifícios
+        const keyBbox = new THREE.Box3().setFromCenterAndSize(
+            new THREE.Vector3(x, 0, z),
+            new THREE.Vector3(1, 1, 1)
+        );
+        
+        // Verificar colisão com cada edifício
+        for (const bbox of buildingBoxes) {
+            if (keyBbox.intersectsBox(bbox)) {
+                return false;
+            }
+        }
+        
+        // Verificar se está em uma rua (não muito perto de edifícios)
+        const minDistanceFromBuildings = streetWidth / 2;
+        for (const bbox of buildingBoxes) {
+            const center = new THREE.Vector3();
+            bbox.getCenter(center);
+            const distance = Math.sqrt(
+                Math.pow(x - center.x, 2) + 
+                Math.pow(z - center.z, 2)
+            );
+            if (distance < minDistanceFromBuildings) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    // Tentar encontrar uma posição válida
+    let x, z;
+    let attempts = 0;
+    const maxAttempts = 100;
+    
+    do {
+        x = (Math.random() * 2 - 1) * (halfSize - streetWidth);
+        z = (Math.random() * 2 - 1) * (halfSize - streetWidth);
+        attempts++;
+    } while (!isValidPosition(x, z) && attempts < maxAttempts);
+    
+    // Se não encontrou uma posição válida após várias tentativas, usar uma posição padrão na rua
+    if (attempts >= maxAttempts) {
+        // Encontrar uma posição na rua mais próxima
+        const streetX = Math.round(x / (blockSize + streetWidth)) * (blockSize + streetWidth);
+        const streetZ = Math.round(z / (blockSize + streetWidth)) * (blockSize + streetWidth);
+        x = streetX;
+        z = streetZ;
+    }
+    
+    // Obter altura do terreno na posição da chave
+    const terrainHeight = getTerrainHeight(x, z);
+    
+    // Criar a metade da chave
+    const keyGeometry = new THREE.BoxGeometry(0.2, 0.4, 0.1);
+    const keyMaterial = new THREE.MeshStandardMaterial({
+        color: 0xFFD700, // Dourado
+        roughness: 0.3,
+        metalness: 0.8,
+        emissive: 0xFFD700,
+        emissiveIntensity: 0.2
+    });
+    
+    const key = new THREE.Mesh(keyGeometry, keyMaterial);
+    key.position.set(0, terrainHeight + 0.2, 0);
+    key.castShadow = true;
+    key.receiveShadow = true;
+    
+    // Adicionar detalhes à chave
+    const handleGeometry = new THREE.BoxGeometry(0.3, 0.1, 0.1);
+    const handle = new THREE.Mesh(handleGeometry, keyMaterial);
+    handle.position.set(0, terrainHeight + 0.4, 0);
+    handle.castShadow = true;
+    handle.receiveShadow = true;
+    
+    // Adicionar um efeito de brilho
+    const glowGeometry = new THREE.SphereGeometry(0.3, 16, 16);
+    const glowMaterial = new THREE.MeshBasicMaterial({
+        color: 0xFFD700,
+        transparent: true,
+        opacity: 0.3
+    });
+    const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+    glow.position.set(0, terrainHeight + 0.3, 0);
+    
+    keyGroup.add(key);
+    keyGroup.add(handle);
+    keyGroup.add(glow);
+    
+    // Posicionar o grupo da chave
+    keyGroup.position.set(x, 0, z);
+    
+    // Adicionar à cena
+    scene.add(keyGroup);
+    cityObjects.push(keyGroup);
+    
+    // Adicionar bounding box para colisão
+    const bbox = new THREE.Box3().setFromObject(keyGroup).expandByScalar(0.1);
+    buildingBoxes.push(bbox);
+    
+    // Adicionar propriedade para identificar que é uma metade de chave
+    keyGroup.userData.isKeyHalf = true;
+    keyGroup.userData.keyNumber = keyNumber;
+    keyGroup.userData.position = new THREE.Vector3(x, terrainHeight, z);
+    
+    // Adicionar visualização da bounding box se debug estiver ativado
+    if (window.DEBUG_COLLISIONS) {
+        const helper = new THREE.Box3Helper(bbox, 0xff0000);
+        scene.add(helper);
+    }
+    
+    return keyGroup;
 }

@@ -9,128 +9,122 @@
 <body>
     <div id="container"></div>
     
-    <div id="controls">
-        <h2>Gerador de Cidade</h2>
-        
-        <label for="gridSize">Tamanho do Grid (3-10):</label>
-        <input type="number" id="gridSize" min="3" max="10" value="3">
-        
-        <label for="streetWidth">Largura das Ruas (5-20):</label>
-        <input type="number" id="streetWidth" min="5" max="20" value="10">
-        
-        <label for="buildingSize">Tamanho dos Edifícios (5-20):</label>
-        <input type="number" id="buildingSize" min="5" max="20" value="10">
-        
-        <label for="buildingHeight">Altura Máxima dos Edifícios (5-50):</label>
-        <input type="number" id="buildingHeight" min="5" max="50" value="20">
-        
-        <div class="checkbox-container">
-            <input type="checkbox" id="enableTerrain" checked>
-            <label for="enableTerrain">Ativar Elevação de Terreno</label>
-        </div>
-        
-        <label for="terrainHeight">Altura Máxima do Terreno (0-15):</label>
-        <input type="range" id="terrainHeight" min="0" max="15" value="8">
-        <span id="terrainHeightValue">8</span>
-        
-        <label for="terrainSmoothing">Suavidade do Terreno (1-10):</label>
-        <input type="range" id="terrainSmoothing" min="1" max="10" value="5">
-        <span id="terrainSmoothingValue">5</span>
-        
-        <h3>Recursos Adicionais</h3>
-        <div class="checkbox-container">
-            <input type="checkbox" id="enableParks" checked>
-            <label for="enableParks">Incluir Parques</label>
-        </div>
-        
-        <div class="checkbox-container">
-            <input type="checkbox" id="enableWater" checked>
-            <label for="enableWater">Incluir Lagos</label>
-        </div>
-        
-        <h3>Configuração de Árvores</h3>
-        <label for="treeCount">Número de Árvores (0-200):</label>
-        <input type="range" id="treeCount" min="0" max="200" value="50">
-        <span id="treeCountValue">50</span>
-        
-        <div class="species-selection">
-            <p>Selecione as espécies de árvores:</p>
-            <div class="checkbox-container">
-                <input type="checkbox" id="species0" class="tree-species-checkbox" value="0" checked>
-                <label for="species0">Pinheiro</label>
+    <div id="start-screen">
+        <div id="start-box">
+            <h2>Gerador de Cidade Procedural</h2>
+            
+            <div class="form-group">
+                <label for="gridSize">Tamanho do Grid (3-10):</label>
+                <input type="number" id="gridSize" min="3" max="10" value="3">
             </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="species1" class="tree-species-checkbox" value="1" checked>
-                <label for="species1">Carvalho</label>
+            
+            <div class="form-group">
+                <label for="streetWidth">Largura das Ruas (5-20):</label>
+                <input type="number" id="streetWidth" min="5" max="20" value="10">
             </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="species2" class="tree-species-checkbox" value="2" checked>
-                <label for="species2">Palmeira</label>
+            
+            <div class="form-group">
+                <label for="buildingSize">Tamanho dos Edifícios (5-20):</label>
+                <input type="number" id="buildingSize" min="5" max="20" value="10">
             </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="species3" class="tree-species-checkbox" value="3">
-                <label for="species3">Bétula</label>
+            
+            <div class="form-group">
+                <label for="buildingHeight">Altura Máxima dos Edifícios (5-50):</label>
+                <input type="number" id="buildingHeight" min="5" max="50" value="20">
             </div>
-        </div>
-        
-        <div class="species-list">
-            <p>Espécies geradas:</p>
-            <ul id="generatedSpeciesList">
-                <li>Nenhuma árvore gerada ainda</li>
-            </ul>
-        </div>
 
-        <h3>Controles de Chuva</h3>
-        <div class="rain-controls">
-            <div class="control-row">
+            <div class="form-group checkbox-group">
+                <input type="checkbox" id="enableTerrain" checked>
+                <label for="enableTerrain">Ativar Elevação de Terreno</label>
+            </div>
+            
+            <div class="form-group">
+                <label for="terrainHeight">Altura Máxima do Terreno (0-15):</label>
+                <input type="range" id="terrainHeight" min="0" max="15" value="8">
+                <span id="terrainHeightValue">8</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="terrainSmoothing">Suavidade do Terreno (1-10):</label>
+                <input type="range" id="terrainSmoothing" min="1" max="10" value="5">
+                <span id="terrainSmoothingValue">5</span>
+            </div>
+            
+            <div class="form-group">
+                <label><input type="checkbox" id="enableParks" checked> Incluir Parques</label>
+                <label><input type="checkbox" id="enableWater" checked> Incluir Lagos</label>
+            </div>
+
+            <div class="form-group">
+                <label for="treeCount">Número de Árvores (0-200):</label>
+                <input type="range" id="treeCount" min="0" max="200" value="50">
+                <span id="treeCountValue">50</span>
+            </div>
+            
+            <div class="form-group">
+                <label>Espécies de árvores:</label>
+                <label><input type="checkbox" id="species0" class="tree-species-checkbox" value="0" checked> Pinheiro</label>
+                <label><input type="checkbox" id="species1" class="tree-species-checkbox" value="1" checked> Carvalho</label>
+                <label><input type="checkbox" id="species2" class="tree-species-checkbox" value="2" checked> Palmeira</label>
+                <label><input type="checkbox" id="species3" class="tree-species-checkbox" value="3"> Bétula</label>
+                <div class="species-list">
+                    <p>Árvores geradas:</p>
+                    <ul id="generatedSpeciesList"></ul>
+                </div>
+            </div>
+            
+            <div class="form-group">
                 <label for="rainMode">Modo da Chuva:</label>
-                <select id="rainMode" class="control-select">
+                <select id="rainMode">
                     <option value="off">Desligado</option>
                     <option value="on">Ligado</option>
                     <option value="random">Aleatório</option>
                 </select>
             </div>
-            <div class="control-row">
+            
+            <div class="form-group">
                 <label for="rainIntensity">Intensidade da Chuva (0-100):</label>
-                <input type="range" id="rainIntensity" min="0" max="100" value="50" class="slider">
+                <input type="range" id="rainIntensity" min="0" max="100" value="50">
                 <span id="rainIntensityValue">50</span>
             </div>
-        </div>
 
-        <button id="generateBtn">Gerar Cidade</button>
-        
-        <div class="instructions">
-            <strong>Controles:</strong>
-            <p>Mouse - Olhar ao redor</p>
-            <p>WASD - Movimento</p>
-            <p>Espaço - Subir (apenas no modo de voo)</p>
-            <p>Shift - Descer (apenas no modo de voo)</p>
-            <p><strong>Modos de Câmera:</strong></p>
-            <p>Primeira Pessoa - Preso ao chão</p>
-            <p>Modo de Voo - Movimento livre em todas direções</p>
-            <p>Vista Aérea - Visão panorâmica do alto</p>
-        </div>
-        
-        <div id="viewControls">
-            <h3>Modos de Câmera</h3>
-            <div class="camera-buttons">
-                <button id="firstPersonBtn" class="camera-button active-camera">Primeira Pessoa</button>
-                <button id="flyBtn" class="camera-button">Modo de Voo</button>
-                <button id="aerialViewBtn" class="camera-button">Vista Aérea</button>
+            <button id="generateBtn">Gerar Cidade</button>
+            
+            <div class="start-instructions">
+                <p><strong>Como Jogar:</strong></p>
+                <p>WASD para mover • Mouse para olhar • Espaço/Shift no modo de voo</p>
             </div>
+
+            <div class="ranking-section">
+                <h3>Melhores Tempos</h3>
+                <ul id="rankingList"></ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-controls" style="display: none;">
+        <h3>Controles</h3>
+        <div class="camera-buttons">
+            <button id="firstPersonBtn" class="camera-button">Primeira Pessoa</button>
+            <button id="flyModeBtn" class="camera-button">Modo de Voo</button>
+            <button id="aerialViewBtn" class="camera-button">Vista Aérea</button>
         </div>
 
         <div class="control-group">
             <h3>Ciclo Dia/Noite</h3>
             <div class="control-row">
                 <label for="timeSlider">Hora do Dia:</label>
-                <input type="range" id="timeSlider" min="0" max="100" value="50" class="slider">
+                <input type="range" id="timeSlider" min="0" max="24" step="0.1" value="12">
                 <span id="timeDisplay">12:00</span>
             </div>
             <div class="control-row">
-                <button id="pauseTime" class="control-button">Pausar Tempo</button>
-                <button id="resumeTime" class="control-button" style="display: none;">Retomar Tempo</button>
+                <button id="pauseTimeBtn" class="control-button">Pausar Tempo</button>
+                <button id="resumeTimeBtn" class="control-button" style="display: none;">Retomar Tempo</button>
             </div>
+        </div>
+
+        <div class="control-group">
+            <button id="collectAllKeysBtn" class="control-button">Coletar Todas as Chaves</button>
         </div>
     </div>
 
@@ -151,7 +145,9 @@
     <script src="js/ui.js"></script>
     <script src="js/player.js"></script>
     <script src="js/collision.js"></script>
+    <script src="js/interactions.js"></script>
     <script src="js/player-sounds.js"></script>
+    <script src="js/building-textures.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

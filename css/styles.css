@@ -228,3 +228,250 @@ input {
 .control-button:hover {
     background: #45a049;
 }
+
+#start-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+#start-box {
+    background: rgba(15, 15, 15, 0.85);
+    border-radius: 16px;
+    border: 2px solid #ffc300;
+    box-shadow: 0 0 40px rgba(0,0,0,0.7), 0 0 0 3px rgba(255, 215, 0, 0.1);
+    padding: 38px 34px 28px 34px;
+    min-width: 340px;
+    max-width: 96vw;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+#start-box h2 {
+    text-align: center;
+    color: #ffe66d;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 8px;
+}
+
+.form-group label {
+    color: #ffe66d;
+    font-size: 15px;
+    margin-bottom: 2px;
+}
+
+.form-group input,
+.form-group select {
+    background: rgba(0,0,0,0.15);
+    border: 1px solid #ffe66d33;
+    color: #fff;
+    padding: 5px 8px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.form-group input[type="range"] {
+    accent-color: gold;
+}
+
+.form-group.checkbox-group {
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+}
+
+#generateBtn {
+    margin-top: 10px;
+    padding: 13px 0;
+    font-size: 18px;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #ffe066 0%, #ffd700 100%);
+    color: #222;
+    border: none;
+    font-weight: bold;
+    box-shadow: 0 2px 12px rgba(255,215,0,0.12);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+#generateBtn:hover {
+    background: linear-gradient(90deg, #ffd700 0%, #ffe066 100%);
+    color: #000;
+}
+
+.start-instructions {
+    margin-top: 14px;
+    font-size: 14px;
+    color: #fffbe6;
+    background: rgba(255, 215, 0, 0.06);
+    padding: 9px 10px 8px 10px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.ranking-section {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.ranking-section h3 {
+    color: #ffe66d;
+    font-size: 16px;
+    margin: 0 0 10px 0;
+    text-align: center;
+}
+
+#rankingList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#rankingList li {
+    color: #fff;
+    padding: 8px 12px;
+    margin: 4px 0;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#rankingList .rank {
+    color: #ffe66d;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+#rankingList .date {
+    color: #aaa;
+    font-size: 0.9em;
+}
+
+/* Estilização da barra de rolagem */
+#start-box::-webkit-scrollbar {
+    width: 8px;
+}
+
+#start-box::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+#start-box::-webkit-scrollbar-thumb {
+    background: rgba(255, 215, 0, 0.3);
+    border-radius: 4px;
+}
+
+#start-box::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 215, 0, 0.5);
+}
+
+#game-controls {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(15, 15, 15, 0.85);
+    border-radius: 16px;
+    border: 2px solid #ffc300;
+    box-shadow: 0 0 40px rgba(0,0,0,0.7), 0 0 0 3px rgba(255, 215, 0, 0.1);
+    padding: 20px;
+    color: #fff;
+    z-index: 10;
+}
+
+#game-controls h3 {
+    color: #ffe66d;
+    font-size: 16px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.camera-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.camera-button {
+    background: rgba(0,0,0,0.15);
+    border: 1px solid #ffe66d33;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.camera-button:hover {
+    background: rgba(255, 215, 0, 0.1);
+    border-color: #ffe66d;
+}
+
+.camera-button.active-camera {
+    background: rgba(255, 215, 0, 0.2);
+    border-color: #ffe66d;
+    color: #ffe66d;
+}
+
+.control-group {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.control-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.control-row label {
+    color: #ffe66d;
+    font-size: 14px;
+    min-width: 100px;
+}
+
+.control-row input[type="range"] {
+    flex: 1;
+    accent-color: gold;
+}
+
+.control-button {
+    background: rgba(0,0,0,0.15);
+    border: 1px solid #ffe66d33;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+}
+
+.control-button:hover {
+    background: rgba(255, 215, 0, 0.1);
+    border-color: #ffe66d;
+}

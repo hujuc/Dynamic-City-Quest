@@ -137,6 +137,20 @@ function createStreetLamp(x, y, z) {
     cityObjects.push(group);
     streetLamps.push(group);
 
+    // --- ADICIONAR COLISÃO DO POSTE ---
+    const poleRadius = 0.25; // Mesmo do poste
+    const poleHeight = 6;    // Mesmo do poste
+
+    // O centro para colisão é o centro do poste (em X,Z), na altura média do poste (y + poleHeight/2)
+    const collisionSphere = {
+        center: new THREE.Vector3(x, y + poleHeight/2, z),
+        radius: poleRadius + 0.4 // 0.4 é margem extra de segurança, ajusta conforme teu feeling
+    };
+    // Adiciona ao array global
+    if (window.streetLampCollisionObjects) {
+        window.streetLampCollisionObjects.push(collisionSphere);
+    }
+
     return group;
 }
 

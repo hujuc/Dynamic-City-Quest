@@ -20,18 +20,10 @@ let cameraRotation = {
 function init() {
     // Criar cena
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x87CEEB); // Céu azul
+    scene.fog = new THREE.Fog(FOG_SETTINGS.color, FOG_SETTINGS.near, FOG_SETTINGS.far);
     
     // Criar câmera
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 10, 30);
-    
-    // Definir rotação inicial da câmera
-    cameraRotation.x = 0;
-    cameraRotation.y = 0;
-    camera.quaternion.setFromEuler(
-        new THREE.Euler(cameraRotation.x, cameraRotation.y, 0, 'YXZ')
-    );
     
     // Criar renderizador
     renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -59,7 +51,13 @@ function init() {
     setupViewControls();
     
     // Configurar o botão de geração
-    document.getElementById('generateBtn').addEventListener('click', generateCity);
+    document.getElementById('generateBtn').addEventListener('click', function() {
+        generateCity();
+        // Esconde a tela inicial
+        document.getElementById('start-screen').style.display = 'none';
+        // Mostra os controles do jogo
+        document.getElementById('game-controls').style.display = 'block';
+    });
     
     // Gerenciar redimensionamento da janela
     window.addEventListener('resize', onWindowResize);
@@ -70,6 +68,15 @@ function init() {
     // Inicializar o corpo do jogador
     initPlayerBody();
     
+    // Inicializar o sistema de interações
+    initInteractionSystem();
+    
+    // Gerar uma cidade pré-gerada para a tela inicial
+    generateInitialCity();
+    
+    // Inicializar o display do ranking
+    updateRankingDisplay();
+    
     // Iniciar loop de animação
     animate();
     
@@ -77,6 +84,26 @@ function init() {
     document.getElementById('container').addEventListener('click', function() {
         document.getElementById('container').requestPointerLock();
     });
+}
+
+// Gerar uma cidade pré-gerada para a tela inicial
+function generateInitialCity() {
+    // Definir valores padrão para a cidade inicial
+    document.getElementById('gridSize').value = 3;
+    document.getElementById('streetWidth').value = 10;
+    document.getElementById('buildingSize').value = 10;
+    document.getElementById('buildingHeight').value = 20;
+    document.getElementById('enableTerrain').checked = true;
+    document.getElementById('terrainHeight').value = 8;
+    document.getElementById('terrainSmoothing').value = 5;
+    document.getElementById('enableParks').checked = true;
+    document.getElementById('enableWater').checked = true;
+    document.getElementById('treeCount').value = 50;
+    document.getElementById('rainMode').value = 'off';
+    document.getElementById('rainIntensity').value = 50;
+    
+    // Gerar a cidade com os valores padrão
+    generateCity();
 }
 
 // Redimensionar quando a janela for redimensionada
@@ -109,12 +136,14 @@ function updateHeadBob(delta) {
         headBobActive = false;
         headBobTimer = 0;
 
-        // Voltar para o valor base (caso pare de andar)
-        let baseY = 2;
-        if (heightData) {
-            baseY = getTerrainHeight(camera.position.x, camera.position.z) + 2;
+        // Voltar para o valor base apenas no modo primeira pessoa
+        if (isFirstPersonMode()) {
+            let baseY = 2;
+            if (heightData) {
+                baseY = getTerrainHeight(camera.position.x, camera.position.z) + 2;
+            }
+            camera.position.y = baseY;
         }
-        camera.position.y = baseY;
     }
 }
 
@@ -126,8 +155,8 @@ function animate() {
     const time = performance.now();
     const delta = (time - prevTime) / 1000;
 
-    // Guardar posição anterior da câmara só no modo primeira pessoa
-    if (isFirstPersonMode()) {
+    // Guardar posição anterior da câmara em todos os modos exceto vista aérea
+    if (!cameraViews.isAerialView) {
         previousCameraPosition.copy(camera.position);
     }
 
@@ -138,25 +167,31 @@ function animate() {
     updatePlayerBody();
     updateFootsteps(moveForward, moveBackward, moveLeft, moveRight); // Atualizar sons de passos
 
-    // Verificar colisões
-    if (
-        isFirstPersonMode() &&
-        (
+    // Verificar colisões em todos os modos exceto vista aérea
+    if (!cameraViews.isAerialView) {
+        // Verificar colisão com as bordas da cidade
+        if (!checkCollisions(camera.position)) {
+            camera.position.copy(previousCameraPosition);
+        }
+        
+        // Verificar outras colisões apenas no modo primeira pessoa
+        if (isFirstPersonMode() && (
             isCameraCollidingWithTrees(camera.position) ||
             isCameraCollidingWithParkObjects(camera.position) ||
             isCameraCollidingWithLakeStones(camera.position) ||
             isCameraCollidingWithBuildings(camera.position)
-        )
-    ) {
-        camera.position.copy(previousCameraPosition);
+        )) {
+            camera.position.copy(previousCameraPosition);
+        }
     }
     
     updateDayNightCycle(scene);
     updateRain();
 
+    updateInteractionSystem();
+
     prevTime = time;
     renderer.render(scene, camera);
-
 }
 
 

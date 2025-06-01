@@ -67,11 +67,16 @@ function switchToFlyMode() {
     cameraViews.currentMode = cameraViews.modes.FLY;
     cameraViews.isAerialView = false;
     
-    // Se não estiver no modo aéreo, não precisamos mudar a câmera de lugar
-    // apenas atualizar o estado do modo
+    // Adicionar fog no modo de voo também
+    scene.fog = new THREE.Fog(FOG_SETTINGS.color, FOG_SETTINGS.near, FOG_SETTINGS.far);
     
     // Atualizar UI
     updateCameraButtonsUI();
+    
+    // Desabilitar o controle de pointerlock
+    if (document.pointerLockElement) {
+        document.exitPointerLock();
+    }
 }
 
 // Mudar para o modo primeira pessoa (preso ao chão)
@@ -113,7 +118,7 @@ function saveCurrentCameraState() {
 // Atualizar a interface dos botões de câmera
 function updateCameraButtonsUI() {
     document.getElementById('firstPersonBtn').classList.remove('active-camera');
-    document.getElementById('flyBtn').classList.remove('active-camera');
+    document.getElementById('flyModeBtn').classList.remove('active-camera');
     document.getElementById('aerialViewBtn').classList.remove('active-camera');
 
     // Destacar o botão ativo
@@ -122,7 +127,7 @@ function updateCameraButtonsUI() {
             document.getElementById('firstPersonBtn').classList.add('active-camera');
             break;
         case cameraViews.modes.FLY:
-            document.getElementById('flyBtn').classList.add('active-camera');
+            document.getElementById('flyModeBtn').classList.add('active-camera');
             break;
         case cameraViews.modes.AERIAL:
             document.getElementById('aerialViewBtn').classList.add('active-camera');
@@ -134,7 +139,7 @@ function updateCameraButtonsUI() {
 function setupViewControls() {
     document.getElementById('aerialViewBtn').addEventListener('click', switchToAerialView);
     document.getElementById('firstPersonBtn').addEventListener('click', switchToFirstPersonMode);
-    document.getElementById('flyBtn').addEventListener('click', switchToFlyMode);
+    document.getElementById('flyModeBtn').addEventListener('click', switchToFlyMode);
     
     // Iniciar no modo primeira pessoa e ajustar a câmera para o chão
     cameraViews.currentMode = cameraViews.modes.FIRST_PERSON;

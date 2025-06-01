@@ -28,16 +28,16 @@ function updateTimeSlider() {
 // Função para pausar o tempo
 function pauseTime() {
     isTimePaused = true;
-    document.getElementById('pauseTime').style.display = 'none';
-    document.getElementById('resumeTime').style.display = 'inline-block';
+    document.getElementById('pauseTimeBtn').style.display = 'none';
+    document.getElementById('resumeTimeBtn').style.display = 'inline-block';
 }
 
 // Função para retomar o tempo
 function resumeTime() {
     isTimePaused = false;
     previousTime = performance.now();
-    document.getElementById('pauseTime').style.display = 'inline-block';
-    document.getElementById('resumeTime').style.display = 'none';
+    document.getElementById('pauseTimeBtn').style.display = 'inline-block';
+    document.getElementById('resumeTimeBtn').style.display = 'none';
 }
 
 // Função para definir o tempo manualmente
@@ -49,8 +49,8 @@ function setTime(value) {
 // Inicializar controles
 function initTimeControls() {
     const slider = document.getElementById('timeSlider');
-    const pauseButton = document.getElementById('pauseTime');
-    const resumeButton = document.getElementById('resumeTime');
+    const pauseButton = document.getElementById('pauseTimeBtn');
+    const resumeButton = document.getElementById('resumeTimeBtn');
 
     // Evento do slider
     slider.addEventListener('input', (e) => {
@@ -204,7 +204,7 @@ function updateCelestialMeshes() {
         const angle = (timeOfDay * 2 * Math.PI) - Math.PI / 2;
 
         const ellipseA = 170; // raio horizontal (mais largo)
-        const ellipseB = 130;  // raio vertical (menos alto)
+        const ellipseB = 100;  // raio vertical (menos alto)
 
         // ---- SUN ----
         const sunX = Math.cos(angle) * ellipseA;
