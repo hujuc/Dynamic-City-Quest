@@ -65,9 +65,6 @@ function init() {
     // Criar terreno plano inicial
     createFlatTerrain();
     
-    // Inicializar o corpo do jogador
-    initPlayerBody();
-    
     // Inicializar o sistema de interações
     initInteractionSystem();
     
@@ -164,7 +161,6 @@ function animate() {
     updateCameraMovement(delta);
     updateHeadBob(delta);
 
-    updatePlayerBody();
     updateFootsteps(moveForward, moveBackward, moveLeft, moveRight); // Atualizar sons de passos
 
     // Verificar colisões em todos os modos exceto vista aérea
