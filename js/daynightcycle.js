@@ -22,8 +22,9 @@ function updateTimeDisplay() {
 // Função para atualizar o slider
 function updateTimeSlider() {
     const slider = document.getElementById('timeSlider');
-    slider.value = timeOfDay * 100;
+    slider.value = timeOfDay * 24;
 }
+
 
 // Função para pausar o tempo
 function pauseTime() {
@@ -42,7 +43,7 @@ function resumeTime() {
 
 // Função para definir o tempo manualmente
 function setTime(value) {
-    timeOfDay = value / 100;
+    timeOfDay = value / 24;
     updateTimeDisplay();
 }
 
@@ -103,9 +104,36 @@ function initDayNightCycle(scene) {
     // Carregar texturas do sol e da lua
     const loader = new THREE.TextureLoader();
     sunTexture = loader.load('./textures/sun.png', () => {
+        // Sol visível
+        const geometry = new THREE.PlaneGeometry(60, 60); 
+        const material = new THREE.MeshBasicMaterial({ 
+            map: sunTexture, 
+            transparent: true,
+            side: THREE.DoubleSide,
+            depthWrite: false,    // Não escreve no depth buffer
+            depthTest: true       // Testa profundidade para ser ocultado por edifícios
+        });
+        sunMesh = new THREE.Mesh(geometry, material);
+        sunMesh.rotation.x = -Math.PI / 2; 
+        sunMesh.renderOrder = 999;
+        scene.add(sunMesh);
         updateCelestialMeshes();
     });
+
     moonTexture = loader.load('./textures/moon.png', () => {
+        // Lua visível
+        const geometry = new THREE.PlaneGeometry(40, 40); 
+        const material = new THREE.MeshBasicMaterial({ 
+            map: moonTexture, 
+            transparent: true,
+            side: THREE.DoubleSide,
+            depthWrite: false,    // Não escreve no depth buffer
+            depthTest: true       // Testa profundidade para ser ocultado por edifícios
+        });
+        moonMesh = new THREE.Mesh(geometry, material);
+        moonMesh.rotation.x = -Math.PI / 2; 
+        moonMesh.renderOrder = 998;
+        scene.add(moonMesh);
         updateCelestialMeshes();
     });
 
@@ -182,7 +210,7 @@ function updateCelestialMeshes() {
         const angle = (timeOfDay * 2 * Math.PI) - Math.PI / 2;
 
         const ellipseA = 170; // raio horizontal (mais largo)
-        const ellipseB = 100;  // raio vertical (menos alto)
+        const ellipseB = 60;  // raio vertical (menos alto)
 
         // ---- SUN ----
         const sunX = Math.cos(angle) * ellipseA;

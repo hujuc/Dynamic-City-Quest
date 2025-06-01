@@ -111,7 +111,9 @@ function showCityBounds() {
         color: 0xff0000,
         transparent: true,
         opacity: 0,
-        side: THREE.DoubleSide
+        side: THREE.DoubleSide,
+        depthWrite: false,    // Não escreve no depth buffer
+        depthTest: true       // Testa profundidade para colisões
     });
     
     // Criar as 6 faces do cubo
@@ -149,6 +151,7 @@ function showCityBounds() {
         const mesh = new THREE.Mesh(geometry, wallMaterial);
         mesh.position.set(...face.position);
         mesh.userData.isCityBound = true;
+        mesh.renderOrder = -1; // Garantir que as paredes são renderizadas antes dos astros
         scene.add(mesh);
     });
 }
