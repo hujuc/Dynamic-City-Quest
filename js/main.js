@@ -7,6 +7,8 @@ let direction = new THREE.Vector3();
 let prevTime = performance.now();
 let terrain = null;
 let heightData = null;
+let headBobTimer = 0;
+let headBobActive = false;
 
 // Variáveis para controle da câmera
 let cameraRotation = {
@@ -45,6 +47,7 @@ function init() {
     // Inicializar o ciclo dia/noite
     initDayNightCycle(scene);
     initRain(scene);
+    initPlayerSounds(); // Inicializar sons do jogador
 
     // Configurar UI
     setupUI();
@@ -85,6 +88,37 @@ function onWindowResize() {
 
 let previousCameraPosition = new THREE.Vector3();
 
+function updateHeadBob(delta) {
+    // Só ativa em primeira pessoa e se estiver a andar
+    if (isFirstPersonMode() && (moveForward || moveBackward || moveLeft || moveRight)) {
+        headBobActive = true;
+        // Controla a velocidade do efeito (ajusta o * 8 se quiseres mais rápido/lento)
+        headBobTimer += delta * 8;
+        // Amplitude do bob (vertical)
+        const amplitude = 0.05; // 0.05 unidades = 5cm (ajusta à tua escala)
+        const bobOffset = Math.sin(headBobTimer) * amplitude;
+        
+        // Guarda a posição base (sem bob)
+        let baseY = 2; // altura padrão da câmara (ajusta se usares outro valor)
+
+        if (heightData) {
+            baseY = getTerrainHeight(camera.position.x, camera.position.z) + 2;
+        }
+        camera.position.y = baseY + bobOffset;
+    } else {
+        headBobActive = false;
+        headBobTimer = 0;
+
+        // Voltar para o valor base (caso pare de andar)
+        let baseY = 2;
+        if (heightData) {
+            baseY = getTerrainHeight(camera.position.x, camera.position.z) + 2;
+        }
+        camera.position.y = baseY;
+    }
+}
+
+
 // Loop de animação
 function animate() {
     requestAnimationFrame(animate);
@@ -99,7 +133,10 @@ function animate() {
 
     // Atualizar movimento e física
     updateCameraMovement(delta);
+    updateHeadBob(delta);
+
     updatePlayerBody();
+    updateFootsteps(moveForward, moveBackward, moveLeft, moveRight); // Atualizar sons de passos
 
     // Verificar colisões
     if (

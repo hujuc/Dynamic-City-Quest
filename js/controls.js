@@ -1,4 +1,3 @@
-// Configurar controles de movimento
 function setupControls() {
     // Adicionar controles de mouse
     const container = document.getElementById("container");
@@ -94,7 +93,13 @@ function setupControls() {
     camera.getWorldDirection(cameraDirection);
     
     // Velocidade constante de movimento
-    const moveSpeed = 30.0 * delta;
+    let moveSpeed;
+    if (isFirstPersonMode()) {
+        moveSpeed = 10.0 * delta;  // <-- MAIS DEVAGAR EM PRIMEIRA PESSOA (ajusta este valor ao teu gosto)
+    } else {
+        moveSpeed = 30.0 * delta;
+    }
+
     
     // Movimento para frente/trás (na direção que a câmera está olhando)
     if (moveForward) {
