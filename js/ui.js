@@ -1,12 +1,23 @@
 // Configurar interface do usuário
 function setupUI() {
+    // Função para validar e corrigir valores numéricos
+    function validateNumericInput(input, min, max) {
+        let value = parseInt(input.value);
+        if (isNaN(value)) value = min;
+        value = Math.max(min, Math.min(max, value));
+        input.value = value;
+        return value;
+    }
+
     // Controles de terreno
     document.getElementById('terrainHeight').addEventListener('input', function() {
-        document.getElementById('terrainHeightValue').textContent = this.value;
+        const value = validateNumericInput(this, 0, 15);
+        document.getElementById('terrainHeightValue').textContent = value;
     });
     
     document.getElementById('terrainSmoothing').addEventListener('input', function() {
-        document.getElementById('terrainSmoothingValue').textContent = this.value;
+        const value = validateNumericInput(this, 1, 10);
+        document.getElementById('terrainSmoothingValue').textContent = value;
     });
     
     // Habilitar/desabilitar controles de terreno
@@ -19,7 +30,27 @@ function setupUI() {
     
     // Controles de árvores
     document.getElementById('treeCount').addEventListener('input', function() {
-        document.getElementById('treeCountValue').textContent = this.value;
+        const value = validateNumericInput(this, 0, 200);
+        document.getElementById('treeCountValue').textContent = value;
+    });
+
+    // Validar inputs numéricos
+    const numericInputs = {
+        'gridSize': { min: 3, max: 7 },
+        'streetWidth': { min: 5, max: 15 },
+        'buildingSize': { min: 5, max: 15 },
+        'buildingHeight': { min: 5, max: 50 }
+    };
+
+    // Adicionar validação para cada input numérico
+    Object.entries(numericInputs).forEach(([id, limits]) => {
+        const input = document.getElementById(id);
+        input.addEventListener('change', function() {
+            validateNumericInput(this, limits.min, limits.max);
+        });
+        input.addEventListener('blur', function() {
+            validateNumericInput(this, limits.min, limits.max);
+        });
     });
     
     // Verificar se pelo menos uma espécie está selecionada
@@ -37,6 +68,4 @@ function setupUI() {
             }
         });
     });
-
-    
 }

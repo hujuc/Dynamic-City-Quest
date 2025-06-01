@@ -183,6 +183,9 @@ function generateTrees() {
     // Verificar o total de árvores geradas
     const totalGenerated = Object.values(speciesCount).reduce((sum, count) => sum + count, 0);
     console.log(`Árvores solicitadas: ${treeSettings.count}, Árvores geradas: ${totalGenerated}`);
+    for (const index in speciesCount) {
+        console.log(`${treeSpecies[index].name}: ${speciesCount[index]}`);
+    }
     
     // Atualizar a lista de espécies geradas
     if (Object.keys(speciesCount).length > 0) {

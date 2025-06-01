@@ -14,9 +14,23 @@ let cityBounds = {
 function isCameraCollidingWithStreetLamps(cameraPosition) {
     if (!isFirstPersonMode()) return false;
 
-    for (const lamp of streetLampCollisionObjects) {
+    // Adicionar uma margem de segurança à posição da câmera
+    const cameraRadius = 0.5; // Raio da câmera para colisão
+    const collisionMargin = 0.3; // Margem adicional de segurança
+
+    for (const lamp of window.streetLampCollisionObjects) {
         const distance = cameraPosition.distanceTo(lamp.center);
-        if (distance < lamp.radius) {
+        const collisionDistance = lamp.radius + cameraRadius + collisionMargin;
+
+        // Debug: Mostrar informações de colisão
+        if (window.DEBUG_COLLISIONS) {
+            const distanceToCollision = distance - collisionDistance;
+            if (distanceToCollision < 1) { // Mostrar apenas quando estiver próximo
+                console.log(`Distância até poste: ${distance.toFixed(2)}, Distância de colisão: ${collisionDistance.toFixed(2)}`);
+            }
+        }
+
+        if (distance < collisionDistance) {
             return true;
         }
     }

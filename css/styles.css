@@ -45,12 +45,20 @@ input {
 .checkbox-container {
     display: flex;
     align-items: center;
+    justify-content: center;
     margin: 8px 0;
+    gap: 8px;
 }
 
-.checkbox-container input {
+.checkbox-container input[type="checkbox"] {
     width: auto;
-    margin-right: 8px;
+    margin: 0;
+    cursor: pointer;
+}
+
+.checkbox-container label {
+    margin: 0;
+    cursor: pointer;
 }
 
 .instructions {
@@ -132,6 +140,33 @@ input {
 .control-select option {
     background-color: #333;
     color: white;
+    padding: 8px;
+}
+
+/* Estilo específico para o select de modos de chuva */
+#rainMode {
+    background-color: #333;
+    color: white;
+    padding: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#rainMode option {
+    background-color: #444;
+    color: white;
+    padding: 8px;
+}
+
+#rainMode option:hover {
+    background-color: #555;
+}
+
+#rainMode:focus {
+    outline: none;
+    border-color: #ffe66d;
+    box-shadow: 0 0 5px rgba(255, 230, 109, 0.3);
 }
 
 .slider {
@@ -276,6 +311,15 @@ input {
     color: #ffe66d;
     font-size: 15px;
     margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-group label input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+    cursor: pointer;
 }
 
 .form-group input,
@@ -295,7 +339,23 @@ input {
 .form-group.checkbox-group {
     flex-direction: row;
     align-items: center;
+    justify-content: center;
     gap: 14px;
+    margin: 8px 0;
+}
+
+.form-group.checkbox-group label {
+    margin: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-group.checkbox-group input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+    cursor: pointer;
 }
 
 #generateBtn {

@@ -14,18 +14,18 @@
             <h2>Gerador de Cidade Procedural</h2>
             
             <div class="form-group">
-                <label for="gridSize">Tamanho do Grid (3-10):</label>
-                <input type="number" id="gridSize" min="3" max="10" value="3">
+                <label for="gridSize">Tamanho do Grid (3-7):</label>
+                <input type="number" id="gridSize" min="3" max="7" value="3">
             </div>
             
             <div class="form-group">
-                <label for="streetWidth">Largura das Ruas (5-20):</label>
-                <input type="number" id="streetWidth" min="5" max="20" value="10">
+                <label for="streetWidth">Largura das Ruas (5-15):</label>
+                <input type="number" id="streetWidth" min="5" max="15" value="10">
             </div>
             
             <div class="form-group">
-                <label for="buildingSize">Tamanho dos Edifícios (5-20):</label>
-                <input type="number" id="buildingSize" min="5" max="20" value="10">
+                <label for="buildingSize">Tamanho dos Edifícios (5-15):</label>
+                <input type="number" id="buildingSize" min="5" max="15" value="10">
             </div>
             
             <div class="form-group">
@@ -67,7 +67,7 @@
                 <label><input type="checkbox" id="species1" class="tree-species-checkbox" value="1" checked> Carvalho</label>
                 <label><input type="checkbox" id="species2" class="tree-species-checkbox" value="2" checked> Palmeira</label>
                 <label><input type="checkbox" id="species3" class="tree-species-checkbox" value="3"> Bétula</label>
-                <div class="species-list">
+                <div class="species-list" style="display: none;">
                     <p>Árvores geradas:</p>
                     <ul id="generatedSpeciesList"></ul>
                 </div>
@@ -92,7 +92,7 @@
             
             <div class="start-instructions">
                 <p><strong>Como Jogar:</strong></p>
-                <p>WASD para mover • Mouse para olhar • Espaço/Shift no modo de voo</p>
+                <p>WASD para mover • Mouse para olhar <br> Espaço/Shift no modo de voo • ESC para pausar</p>
             </div>
 
             <div class="ranking-section">
@@ -103,8 +103,13 @@
     </div>
 
     <div id="game-controls" style="display: none;">
-        <h3>Controles</h3>
-        <div class="camera-buttons">
+        <h3>Controlos</h3>
+        <div class="start-instructions">
+            <p><strong>Como Jogar:</strong></p>
+            <p>WASD para mover • Mouse para olhar <br> Espaço/Shift no modo de voo • ESC para pausar</p>
+        </div>
+
+        <div class="camera-buttons" style="margin-top: 20px;">
             <button id="firstPersonBtn" class="camera-button">Primeira Pessoa</button>
             <button id="flyModeBtn" class="camera-button">Modo de Voo</button>
             <button id="aerialViewBtn" class="camera-button">Vista Aérea</button>

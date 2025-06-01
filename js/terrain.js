@@ -6,7 +6,7 @@ function createFlatTerrain() {
         terrain.material.dispose();
     }
     
-    const terrainSize = 500;
+    const terrainSize = 1000;
     const terrainSegments = 128;
     
     // IMPORTANTE: Limpar o heightData quando criamos um terreno plano
@@ -40,7 +40,7 @@ function createTerrainWithElevation(maxHeight, smoothing) {
         terrain.material.dispose();
     }
     
-    const terrainSize = 500;
+    const terrainSize = 1000;
     const terrainSegments = 128;
     
     // Criar geometria do terreno
@@ -136,7 +136,7 @@ function getTerrainHeight(x, z) {
     if (!heightData) return 0;
     
     // Converter de coordenadas do mundo para índices no mapa de altura
-    const terrainSize = 500;
+    const terrainSize = 1000;
     const segments = heightData.length - 1;
     
     // Ajustar para coordenadas de 0 a segments

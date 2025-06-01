@@ -168,7 +168,7 @@ function updateDayNightCycle(scene) {
 // Atualiza a posição e intensidade do sol e da lua
 function updateSunAndMoon(scene) {
     const angle = (timeOfDay * 2 * Math.PI) - Math.PI / 2;
-    const radius = 1000;
+    const radius = 1500;
 
     // Sol
     const sunPos = new THREE.Vector3(
@@ -183,18 +183,17 @@ function updateSunAndMoon(scene) {
     const sunHeight = Math.max(0, sunPos.y / radius);
     sunLight.intensity = sunHeight;
     
-    const maxCitySize = 600; // ajusta conforme o tamanho máximo da tua cidade
+    const maxCitySize = 1200;
     sunLight.shadow.camera.left = -maxCitySize;
     sunLight.shadow.camera.right = maxCitySize;
     sunLight.shadow.camera.top = maxCitySize;
     sunLight.shadow.camera.bottom = -maxCitySize;
     sunLight.shadow.camera.near = 0.5;
-    sunLight.shadow.camera.far = 2000; // garante que o sol cobre todo o terreno, mesmo à noite
+    sunLight.shadow.camera.far = 3000;
     sunLight.shadow.bias = -0.0001;
     sunLight.shadow.normalBias = 0.02;
     sunLight.shadow.radius = 1.5;
     sunLight.shadow.camera.updateProjectionMatrix();
-
 
     // Lua (lado oposto)
     const moonPos = sunPos.clone().negate();
@@ -209,13 +208,15 @@ function updateCelestialMeshes() {
     if (sunMesh && moonMesh) {
         const angle = (timeOfDay * 2 * Math.PI) - Math.PI / 2;
 
-        const ellipseA = 170; // raio horizontal (mais largo)
-        const ellipseB = 60;  // raio vertical (menos alto)
+        const ellipseA = 280;
+        const ellipseB = 80;
 
         // ---- SUN ----
         const sunX = Math.cos(angle) * ellipseA;
         const sunY = Math.sin(angle) * ellipseB;
         sunMesh.position.set(sunX, sunY, 0);
+
+        sunMesh.scale.set(1.5, 1.5, 1.5);
 
         sunMesh.lookAt(0, 0, 0);
 
@@ -224,14 +225,16 @@ function updateCelestialMeshes() {
         let tiltSun = THREE.MathUtils.lerp(0, Math.PI/2, tSun);
         sunMesh.rotation.z += (sunY >= 0) ? tiltSun : -tiltSun;
 
-        const sunVisibility = Math.max(0, Math.min(1, (sunY + 10) / 20));
+        const sunVisibility = Math.max(0, Math.min(1, (sunY + 20) / 40));
         sunMesh.material.opacity = sunVisibility;
-        sunMesh.visible = sunY > -10;
+        sunMesh.visible = sunY > -20;
 
         // ---- MOON ----
         const moonX = -Math.cos(angle) * ellipseA;
         const moonY = -Math.sin(angle) * ellipseB;
         moonMesh.position.set(moonX, moonY, 0);
+
+        moonMesh.scale.set(1.5, 1.5, 1.5);
 
         moonMesh.lookAt(0, 0, 0);
 
@@ -239,9 +242,9 @@ function updateCelestialMeshes() {
         let tiltMoon = THREE.MathUtils.lerp(0, Math.PI/2, tMoon);
         moonMesh.rotation.z += (moonY >= 0) ? tiltMoon : -tiltMoon;
 
-        const moonVisibility = Math.max(0, Math.min(1, (moonY + 10) / 20));
+        const moonVisibility = Math.max(0, Math.min(1, (moonY + 20) / 40));
         moonMesh.material.opacity = moonVisibility;
-        moonMesh.visible = moonY > -10;
+        moonMesh.visible = moonY > -20;
     }
 }
 

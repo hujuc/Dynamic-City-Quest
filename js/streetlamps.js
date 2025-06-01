@@ -5,6 +5,9 @@ let poleMaterial = null;
 let glowMaterial = null;
 let groundLightMaterial = null;
 
+// Array global para armazenar objetos de colisão dos postes
+window.streetLampCollisionObjects = [];
+
 // 4 offsets para as pontas (em relação ao centro da esquina)
 const CORNER_OFFSETS = [
     [ 0.7,  0.7], // canto nordeste
@@ -261,6 +264,7 @@ function clearStreetLamps() {
         });
     });
     streetLamps = [];
+    window.streetLampCollisionObjects = []; // Limpar também os objetos de colisão
     
     // Limpar materiais compartilhados
     if (poleMaterial) {
