@@ -123,9 +123,11 @@ function checkProximity() {
         const objectPosition = object.userData.position || object.position;
         if (!objectPosition) continue;
         
+        // Calcular distância 3D (incluindo altura)
         const dx = camera.position.x - objectPosition.x;
+        const dy = camera.position.y - objectPosition.y;
         const dz = camera.position.z - objectPosition.z;
-        const distance = Math.sqrt(dx*dx + dz*dz);
+        const distance = Math.sqrt(dx*dx + dy*dy + dz*dz);
         
         if (distance <= INTERACTION_DISTANCE) {
             if (object.userData.isTreasureChest) {

@@ -1547,15 +1547,20 @@ function createKeyHalf(keyNumber) {
             return false;
         }
         
-        // Verificar colisão com edifícios
-        const keyBbox = new THREE.Box3().setFromCenterAndSize(
-            new THREE.Vector3(x, 0, z),
-            new THREE.Vector3(1, 1, 1)
+        // Obter altura do terreno na posição da chave
+        const terrainHeight = getTerrainHeight(x, z);
+        
+        // Criar uma esfera de colisão para a chave
+        const keyCollisionSphere = new THREE.Sphere(
+            new THREE.Vector3(x, terrainHeight + 0.3, z), // Posição central da chave
+            0.5 // Raio de colisão
         );
         
         // Verificar colisão com cada edifício
         for (const bbox of buildingBoxes) {
-            if (keyBbox.intersectsBox(bbox)) {
+            // Calcular a distância entre a esfera e a bounding box
+            const distance = bbox.distanceToPoint(keyCollisionSphere.center);
+            if (distance < keyCollisionSphere.radius) {
                 return false;
             }
         }
@@ -1574,6 +1579,14 @@ function createKeyHalf(keyNumber) {
             }
         }
         
+        // Verificar colisão com postes de luz
+        for (const lamp of window.streetLampCollisionObjects) {
+            const distance = keyCollisionSphere.center.distanceTo(lamp.center);
+            if (distance < (keyCollisionSphere.radius + lamp.radius)) {
+                return false;
+            }
+        }
+        
         return true;
     }
     
@@ -1581,15 +1594,34 @@ function createKeyHalf(keyNumber) {
     let x, z;
     let attempts = 0;
     const maxAttempts = 100;
+    let validPosition = false;
     
     do {
-        x = (Math.random() * 2 - 1) * (halfSize - streetWidth);
-        z = (Math.random() * 2 - 1) * (halfSize - streetWidth);
+        // Tentar posições em ruas específicas primeiro
+        if (attempts < 50) {
+            // Escolher uma rua aleatória
+            const streetIndex = Math.floor(Math.random() * (gridSize + 1));
+            const isHorizontal = Math.random() > 0.5;
+            
+            if (isHorizontal) {
+                x = -halfSize + streetWidth/2 + (streetIndex * (blockSize + streetWidth));
+                z = -halfSize + streetWidth/2 + (Math.random() * (totalSize - streetWidth));
+            } else {
+                x = -halfSize + streetWidth/2 + (Math.random() * (totalSize - streetWidth));
+                z = -halfSize + streetWidth/2 + (streetIndex * (blockSize + streetWidth));
+            }
+        } else {
+            // Se não conseguir nas ruas, tentar posições aleatórias
+            x = (Math.random() * 2 - 1) * (halfSize - streetWidth);
+            z = (Math.random() * 2 - 1) * (halfSize - streetWidth);
+        }
+        
+        validPosition = isValidPosition(x, z);
         attempts++;
-    } while (!isValidPosition(x, z) && attempts < maxAttempts);
+    } while (!validPosition && attempts < maxAttempts);
     
     // Se não encontrou uma posição válida após várias tentativas, usar uma posição padrão na rua
-    if (attempts >= maxAttempts) {
+    if (!validPosition) {
         // Encontrar uma posição na rua mais próxima
         const streetX = Math.round(x / (blockSize + streetWidth)) * (blockSize + streetWidth);
         const streetZ = Math.round(z / (blockSize + streetWidth)) * (blockSize + streetWidth);
