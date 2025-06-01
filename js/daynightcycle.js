@@ -100,35 +100,13 @@ function initDayNightCycle(scene) {
     // Estrelas
     createStars(scene);
 
-    // Carregar texturas e criar sol e lua visíveis
+    // Carregar texturas do sol e da lua
     const loader = new THREE.TextureLoader();
-
-    sunTexture = loader.load('textures/sun.png', () => {
-        // Sol visível
-        const geometry = new THREE.PlaneGeometry(60, 60); 
-        const material = new THREE.MeshBasicMaterial({ 
-            map: sunTexture, 
-            transparent: true,
-            side: THREE.DoubleSide // Garantir que a textura seja visível de ambos os lados
-        });
-        sunMesh = new THREE.Mesh(geometry, material);
-        sunMesh.rotation.x = -Math.PI / 2; 
-        sunMesh.renderOrder = 999;
-        scene.add(sunMesh);
+    sunTexture = loader.load('/Dynamic-City-Quest/textures/sun.png', () => {
+        updateCelestialMeshes();
     });
-
-    moonTexture = loader.load('textures/moon.png', () => {
-        // Lua visível
-        const geometry = new THREE.PlaneGeometry(40, 40); 
-        const material = new THREE.MeshBasicMaterial({ 
-            map: moonTexture, 
-            transparent: true,
-            side: THREE.DoubleSide // Garantir que a textura seja visível de ambos os lados
-        });
-        moonMesh = new THREE.Mesh(geometry, material);
-        moonMesh.rotation.x = -Math.PI / 2; 
-        moonMesh.renderOrder = 998;
-        scene.add(moonMesh);
+    moonTexture = loader.load('/Dynamic-City-Quest/textures/moon.png', () => {
+        updateCelestialMeshes();
     });
 
     // Inicializar controles
