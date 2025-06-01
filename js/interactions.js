@@ -66,7 +66,7 @@ function createInteractionUI() {
     
     // Criar imagem de final
     const endingImage = document.createElement('img');
-    endingImage.src = '../textures/ending.jpg';
+    endingImage.src = 'textures/ending.jpg';
     endingImage.style.width = '100%';
     endingImage.style.height = '100%';
     endingImage.style.objectFit = 'cover';
