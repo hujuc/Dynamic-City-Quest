@@ -44,23 +44,8 @@ function init() {
 
     // Inicializar o ciclo dia/noite
     initDayNightCycle(scene);
-    
-    // const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    // directionalLight.position.set(100, 100, 50);
-    // directionalLight.castShadow = true;
-    
-    // // Configurar sombras
-    // directionalLight.shadow.mapSize.width = 2048;
-    // directionalLight.shadow.mapSize.height = 2048;
-    // directionalLight.shadow.camera.near = 0.5;
-    // directionalLight.shadow.camera.far = 500;
-    // directionalLight.shadow.camera.left = -250;
-    // directionalLight.shadow.camera.right = 250;
-    // directionalLight.shadow.camera.bottom = -250;
-    // directionalLight.shadow.camera.top = 250;
-    
-    // scene.add(directionalLight);
-    
+    initRain(scene);
+
     // Configurar UI
     setupUI();
     
@@ -130,6 +115,7 @@ function animate() {
     }
     
     updateDayNightCycle(scene);
+    updateRain();
 
     prevTime = time;
     renderer.render(scene, camera);

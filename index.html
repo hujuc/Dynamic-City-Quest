@@ -79,7 +79,24 @@
                 <li>Nenhuma árvore gerada ainda</li>
             </ul>
         </div>
-        
+
+        <h3>Controles de Chuva</h3>
+        <div class="rain-controls">
+            <div class="control-row">
+                <label for="rainMode">Modo da Chuva:</label>
+                <select id="rainMode" class="control-select">
+                    <option value="off">Desligado</option>
+                    <option value="on">Ligado</option>
+                    <option value="random">Aleatório</option>
+                </select>
+            </div>
+            <div class="control-row">
+                <label for="rainIntensity">Intensidade da Chuva (0-100):</label>
+                <input type="range" id="rainIntensity" min="0" max="100" value="50" class="slider">
+                <span id="rainIntensityValue">50</span>
+            </div>
+        </div>
+
         <button id="generateBtn">Gerar Cidade</button>
         
         <div class="instructions">
@@ -126,6 +143,7 @@
     <script src="js/parks.js"></script>
     <script src="js/water.js"></script>
     <script src="js/camera-views.js"></script>
+    <script src="js/rain.js"></script>
     <script src="js/streetlamps.js"></script>
     <script src="js/daynightcycle.js"></script>
     <script src="js/city.js"></script>

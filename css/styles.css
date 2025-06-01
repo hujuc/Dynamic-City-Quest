@@ -107,6 +107,38 @@ input {
     font-weight: bold;
 }
 
+/* Estilos para controles de chuva */
+.rain-controls {
+    margin: 15px 0;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+}
+
+.control-row {
+    margin: 10px 0;
+}
+
+.control-select {
+    width: 100%;
+    padding: 5px;
+    margin: 5px 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+.control-select option {
+    background-color: #333;
+    color: white;
+}
+
+.slider {
+    width: 100%;
+    margin: 5px 0;
+}
+
 #viewControls {
     margin-top: 15px;
 }
@@ -180,37 +212,6 @@ input {
 .control-row label {
     color: #fff;
     min-width: 80px;
-}
-
-.slider {
-    flex: 1;
-    height: 8px;
-    -webkit-appearance: none;
-    background: #444;
-    border-radius: 4px;
-    outline: none;
-}
-
-.slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 16px;
-    height: 16px;
-    background: #4CAF50;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.slider::-webkit-slider-thumb:hover {
-    background: #45a049;
-}
-
-#timeDisplay {
-    color: #fff;
-    min-width: 60px;
-    text-align: center;
-    font-family: monospace;
-    font-size: 1.1em;
 }
 
 .control-button {
