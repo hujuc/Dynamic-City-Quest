@@ -1422,67 +1422,77 @@ function animate() {
     // ... resto do código de animação existente ...
 }
 
-// Função para criar o baú do tesouro
-function createTreasureChest(centerX, centerZ, size) {
+// Função para carregar o modelo GLB do baú
+function loadChestModel(centerX, centerZ, terrainHeight) {
+    const loader = new THREE.GLTFLoader();
     const chestGroup = new THREE.Group();
     
-    // Obter altura do terreno na posição do baú
-    const terrainHeight = getTerrainHeight(centerX, centerZ);
-    
-    // Criar a base do baú (uma plataforma)
-    const baseGeometry = new THREE.BoxGeometry(2, 0.2, 2);
-    const baseMaterial = new THREE.MeshStandardMaterial({
-        color: 0x8B4513,
-        roughness: 0.9,
-        metalness: 0.1
-    });
-    const base = new THREE.Mesh(baseGeometry, baseMaterial);
-    base.position.set(0, terrainHeight + 0.1, 0);
-    base.castShadow = true;
-    base.receiveShadow = true;
-    chestGroup.add(base);
-    
-    // Criar o baú
-    const chestGeometry = new THREE.BoxGeometry(1.5, 1, 1);
-    const chestMaterial = new THREE.MeshStandardMaterial({
-        color: 0xDAA520,
+    // Criar pedestal
+    const pedestalGeometry = new THREE.CylinderGeometry(1.5, 2, 1, 8);
+    const pedestalMaterial = new THREE.MeshStandardMaterial({
+        color: 0x808080,
         roughness: 0.7,
         metalness: 0.3
     });
-    const chest = new THREE.Mesh(chestGeometry, chestMaterial);
-    chest.position.set(0, terrainHeight + 0.7, 0);
-    chest.castShadow = true;
-    chest.receiveShadow = true;
-    chestGroup.add(chest);
+    const pedestal = new THREE.Mesh(pedestalGeometry, pedestalMaterial);
+    pedestal.position.set(0, 0.5, 0); // Metade da altura do pedestal
+    pedestal.castShadow = true;
+    pedestal.receiveShadow = true;
+    chestGroup.add(pedestal);
     
-    // Adicionar detalhes ao baú (tampa, fechadura, etc)
-    const lidGeometry = new THREE.BoxGeometry(1.5, 0.2, 1);
-    const lidMaterial = new THREE.MeshStandardMaterial({
-        color: 0xB8860B,
-        roughness: 0.7,
-        metalness: 0.3
-    });
-    const lid = new THREE.Mesh(lidGeometry, lidMaterial);
-    lid.position.set(0, terrainHeight + 1.2, 0);
-    lid.castShadow = true;
-    lid.receiveShadow = true;
-    chestGroup.add(lid);
+    // Adicionar bounding box específica para o pedestal
+    const pedestalBbox = new THREE.Box3().setFromObject(pedestal).expandByScalar(0.1);
+    if (!buildingBoxes) {
+        buildingBoxes = [];
+    }
+    buildingBoxes.push(pedestalBbox);
     
-    // Adicionar fechadura
-    const lockGeometry = new THREE.BoxGeometry(0.2, 0.2, 0.1);
-    const lockMaterial = new THREE.MeshStandardMaterial({
-        color: 0x696969,
-        roughness: 0.5,
-        metalness: 0.8
-    });
-    const lock = new THREE.Mesh(lockGeometry, lockMaterial);
-    lock.position.set(0, terrainHeight + 1.1, 0.5);
-    lock.castShadow = true;
-    lock.receiveShadow = true;
-    chestGroup.add(lock);
+    // Adicionar visualização da bounding box do pedestal se debug estiver ativado
+    if (window.DEBUG_COLLISIONS) {
+        const pedestalHelper = new THREE.Box3Helper(pedestalBbox, 0xff0000);
+        scene.add(pedestalHelper);
+    }
+    
+    // Carregar o modelo GLB
+    loader.load(
+        'models/chest.glb',
+        function (gltf) {
+            const model = gltf.scene;
+            
+            // Aumentar escala do modelo
+            model.scale.set(1.5, 1.5, 1.5);
+            
+            // Posicionar o modelo em cima do pedestal
+            model.position.set(0, 1.5, 0); // Altura do pedestal + metade da altura do baú
+            
+            // Habilitar sombras
+            model.traverse((node) => {
+                if (node.isMesh) {
+                    node.castShadow = true;
+                    node.receiveShadow = true;
+                }
+            });
+            
+            chestGroup.add(model);
+            
+            // Adicionar bounding box para o baú
+            const chestBbox = new THREE.Box3().setFromObject(model).expandByScalar(0.1);
+            buildingBoxes.push(chestBbox);
+            
+            // Adicionar visualização da bounding box do baú se debug estiver ativado
+            if (window.DEBUG_COLLISIONS) {
+                const chestHelper = new THREE.Box3Helper(chestBbox, 0xff0000);
+                scene.add(chestHelper);
+            }
+        },
+        undefined,
+        function (error) {
+            console.error('Erro ao carregar o modelo do baú:', error);
+        }
+    );
     
     // Posicionar o grupo do baú
-    chestGroup.position.set(centerX, 0, centerZ);
+    chestGroup.position.set(centerX, terrainHeight, centerZ);
     
     // Adicionar à cena
     scene.add(chestGroup);
@@ -1493,19 +1503,6 @@ function createTreasureChest(centerX, centerZ, size) {
     }
     cityObjects.push(chestGroup);
     
-    // Adicionar bounding box para colisão
-    const bbox = new THREE.Box3().setFromObject(chestGroup).expandByScalar(0.1);
-    if (!buildingBoxes) {
-        buildingBoxes = [];
-    }
-    buildingBoxes.push(bbox);
-    
-    // Adicionar visualização da bounding box se debug estiver ativado
-    if (window.DEBUG_COLLISIONS) {
-        const helper = new THREE.Box3Helper(bbox, 0xff0000);
-        scene.add(helper);
-    }
-    
     // Adicionar propriedade para identificar que é um baú do tesouro
     chestGroup.userData = {
         isTreasureChest: true,
@@ -1513,6 +1510,15 @@ function createTreasureChest(centerX, centerZ, size) {
     };
     
     return chestGroup;
+}
+
+// Função para criar o baú do tesouro
+function createTreasureChest(centerX, centerZ, size) {
+    // Obter altura do terreno na posição do baú
+    const terrainHeight = getTerrainHeight(centerX, centerZ);
+    
+    // Carregar o modelo GLB do baú
+    return loadChestModel(centerX, centerZ, terrainHeight);
 }
 
 // Função para criar uma metade de chave
